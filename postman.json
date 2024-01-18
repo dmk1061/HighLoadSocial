@@ -1,0 +1,111 @@
+{
+  "info": {
+    "_postman_id": "aadc788e-b8d6-42ab-a9cb-1d58c2d80c97",
+    "name": "Otus-Social",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "2780766"
+  },
+  "item": [
+    {
+      "name": "getJwtToken",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"login\": \"john_doe\", \"password\": \"hashed_password_1\"}"
+        },
+        "url": {
+          "raw": "localhost/getToken",
+          "protocol": "http",
+          "host": [
+            "localhost:8080"
+          ],
+          "path": [
+            "auth",
+            "getToken"
+          ]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// Parse the response JSON",
+              "var jsonResponse = JSON.parse(responseBody);",
+              "// Set a global variable with a value from the response",
+              "pm.environment.set('otus-token', pm.response.json().jwt);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "getUserDataById",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{otus-token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "localhost/getUserDateById",
+          "protocol": "http",
+          "host": [
+            "localhost:8080"
+          ],
+          "path": [
+            "user",
+            "get",
+            "2"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "registerUser",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{otus-token}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"id\": 123,\n  \"name\": \"Jimmy\",\n  \"surname\": \"Doe\",\n  \"age\": 30,\n  \"sex\": \"M\",\n  \"city\": \"New York\",\n  \"interests\": [\"Reading\", \"Traveling\", \"Sports\"],\n  \"login\": \"jim_doe\",\n  \"password\": \"secure_password\"\n}"
+        },
+        "url": {
+          "raw": "localhost/registerUser",
+          "protocol": "http",
+          "host": [
+            "localhost:8080"
+          ],
+          "path": [
+            "user",
+            "register"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+version: "3.2"
+services:
+
+  postgres:
+    image: "postgres:13-alpine"
+    container_name: "postgresql13"
+    environment:
+      - "POSTGRES_USER=postgres"
+      - "POSTGRES_PASSWORD=postgres"
+#    volumes:
+#      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
