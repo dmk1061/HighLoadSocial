@@ -2,6 +2,7 @@ package org.otus.social.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.otus.social.dto.SearchRequestDto;
 import org.otus.social.dto.UserDataDto;
 import org.otus.social.dto.RegisterUserDto;;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -25,7 +26,6 @@ public class UserServiceImpl implements UserService {
     private final DataSource dataSource;
     PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-
     @Transactional
     @Override
     public Long registerUser(final RegisterUserDto registerUserDto) throws SQLException {
@@ -38,7 +38,6 @@ public class UserServiceImpl implements UserService {
         }
         return userId;
     }
-
     // Остальные методы без изменений...
 
     private Long getAddressIdOrCreateIfNotExists(Connection con, String city) throws SQLException {
@@ -122,6 +121,43 @@ public class UserServiceImpl implements UserService {
                 insertUserInterest.executeUpdate();
     }
 }
+
+    @Override
+    public List<UserDataDto> search(SearchRequestDto searchRequestDto) {
+        log.info("search");
+        List<UserDataDto> list = new ArrayList<>();
+
+        try (final Connection con = dataSource.getConnection()) {
+            final PreparedStatement selectUsers = con.prepareStatement(
+                    "SELECT * FROM USERS U LEFT JOIN ADDRESS A ON U.ADDRESS_ID = A.ID WHERE U.NAME LIKE ? and U.SURNAME LIKE ? ORDER BY U.ID;"
+
+            );
+            selectUsers.setString(1, "%"+searchRequestDto.getFirstName() + "%");
+            selectUsers.setString(2, "%" +searchRequestDto.getLastName()+ "%");
+            try (final ResultSet selectedUsers = selectUsers.executeQuery();) {
+                while (selectedUsers.next()) {
+                    final UserDataDto userDataDto = new UserDataDto();
+                    userDataDto.setName(selectedUsers.getString(2));
+                    userDataDto.setSurname(selectedUsers.getString(3));
+                    userDataDto.setAge(selectedUsers.getLong(4));
+                    userDataDto.setSex(selectedUsers.getString(5));
+                    userDataDto.setCity(selectedUsers.getString(10));
+                    userDataDto.setInterests(new ArrayList<String>());
+                    list.add(userDataDto);
+                }
+                }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+
+
+        return list;
+
+
+    }
+
+
     @Override
     public UserDataDto getUserDataByUserId(final Long userId) {
         final UserDataDto userDataDto = new UserDataDto();
