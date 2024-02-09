@@ -1,13 +1,87 @@
-version: "3.2"
-services:
+version: '3.8'
 
-  postgres:
-    image: "postgres:13-alpine"
-    container_name: "postgresql13"
+services:
+  master1:
+    build:
+      context: .
+      dockerfile: ./pg/master1/Dockerfile
     environment:
-      - "POSTGRES_USER=postgres"
-      - "POSTGRES_PASSWORD=postgres"
-#    volumes:
-#      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      POSTGRES_PASSWORD: pass
+      POSTGRES_USER: postgres
+      AUTH_METHOD: trust  # Change this value to 'password' for password authentication
+      POSTGRES_HOST_AUTH_METHOD: "scram-sha-256\n host replication all 0.0.0.0/0 trust"
+      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
+    command: |
     ports:
       - "5432:5432"
+    networks:
+      - pg-network
+    volumes:
+      - master1_data:/var/lib/postgresql/data
+      - ./00_init.sql:/docker-entrypoint-initdb.d/00_init.sql
+    restart: unless-stopped
+  slave1:
+    build:
+      context: .
+      dockerfile: ./pg/slave1/Dockerfile
+    environment:
+      POSTGRES_PASSWORD: pass
+      POSTGRES_USER: postgres
+      AUTH_METHOD: trust  # Change this value to 'password' for password authentication
+    command: |
+      bash -c "
+      until pg_basebackup --pgdata=/var/lib/postgresql/data -R --slot=replication_slot1 --host=master1 --port=5432
+      do
+      echo 'Waiting for primary to connect...'
+      sleep 1s
+      done
+      echo 'Backup done, starting replica...'
+      chmod 0700 /var/lib/postgresql/data
+      postgres
+      "
+    ports:
+      - "15432:5432"
+    networks:
+      - pg-network
+    volumes:
+      - slave1_data:/var/lib/postgresql/data
+    #     - ./postgresql.conf:/etc/postgresql/postgresql.conf # Mount the custom postgresql.conf file
+    restart: unless-stopped
+    depends_on:
+      - master1
+  slave2:
+    build:
+      context: .
+      dockerfile: ./pg/slave2/Dockerfile
+    environment:
+      POSTGRES_PASSWORD: pass
+      POSTGRES_USER: postgres
+      AUTH_METHOD: trust  # Change this value to 'password' for password authentication
+    command: |
+      bash -c "
+      until pg_basebackup --pgdata=/var/lib/postgresql/data -R --slot=replication_slot2 --host=master1 --port=5432
+      do
+      echo 'Waiting for primary to connect...'
+      sleep 1s
+      done
+      echo 'Backup done, starting replica...'
+      chmod 0700 /var/lib/postgresql/data
+      postgres
+      "
+    ports:
+      - "25432:5432"
+    networks:
+      - pg-network
+    volumes:
+        - slave2_data:/var/lib/postgresql/data
+    #     - ./postgresql.conf:/etc/postgresql/postgresql.conf # Mount the custom postgresql.conf file
+    restart: unless-stopped
+    depends_on:
+      - master1
+networks:
+  pg-network:
+    driver: bridge
+volumes:
+  master1_data:
+  slave1_data:
+  slave2_data:
