@@ -4,7 +4,7 @@ services:
   master1:
     build:
       context: .
-      dockerfile: ./pg/master1/Dockerfile
+      dockerfile: ./pg/master1sync/Dockerfile
     environment:
       POSTGRES_PASSWORD: pass
       POSTGRES_USER: postgres
@@ -45,9 +45,9 @@ services:
     volumes:
       - slave1_data:/var/lib/postgresql/data
     #     - ./postgresql.conf:/etc/postgresql/postgresql.conf # Mount the custom postgresql.conf file
- #   restart: unless-stopped
-#    depends_on:
-#      - master1
+  #   restart: unless-stopped
+  #    depends_on:
+  #      - master1
   slave2:
     build:
       context: .

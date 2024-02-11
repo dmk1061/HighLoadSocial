@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.otus.social.dto.SearchRequestDto;
 import org.otus.social.dto.UserDataDto;
 import org.otus.social.dto.RegisterUserDto;;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,28 +21,41 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    private final DataSource dataSource;
+    @Autowired
+    @Qualifier("masterDataSource")
+    private final DataSource masterDataSource;
+    @Autowired
+    @Qualifier("slaveDataSource")
+    private final DataSource slaveDataSource;
     PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+
+    public DataSource getDataSource (boolean master){
+        if(master){
+            return masterDataSource;
+        }else {
+            return slaveDataSource;
+        }
+    }
 
     @Transactional
     @Override
     public Long registerUser(final RegisterUserDto registerUserDto) throws SQLException {
         log.info("user registration started {}", registerUserDto.getLogin());
         Long userId = null;
-        try (final Connection con = dataSource.getConnection()) {
+        try (final Connection con = masterDataSource.getConnection()) {
             Long addressId = getAddressIdOrCreateIfNotExists(con, registerUserDto.getCity());
             userId = insertUserAndGetId(con, registerUserDto, addressId);
             insertUserInterests(con, userId, registerUserDto.getInterests());
         }
         return userId;
     }
-    // Остальные методы без изменений...
 
-    private Long getAddressIdOrCreateIfNotExists(Connection con, String city) throws SQLException {
+    public Long getAddressIdOrCreateIfNotExists(Connection con, String city) throws SQLException {
         try (final PreparedStatement selectAddress = con.prepareStatement(
                 "SELECT ID FROM ADDRESS WHERE CITY =?;")) {
             selectAddress.setString(1, city);
@@ -68,7 +83,7 @@ public class UserServiceImpl implements UserService {
         return null;
     }
 
-    private Long insertUserAndGetId(Connection con, RegisterUserDto registerUserDto, Long addressId) throws SQLException {
+    public Long insertUserAndGetId(Connection con, RegisterUserDto registerUserDto, Long addressId) throws SQLException {
         Long userId = null;
         try (final PreparedStatement insertUser = con.prepareStatement(
                 "INSERT INTO USERS (name, surname, age, sex, address_id, login, password) values (?,?,?,?,?,?,?);",
@@ -127,7 +142,7 @@ public class UserServiceImpl implements UserService {
         log.info("search");
         List<UserDataDto> list = new ArrayList<>();
 
-        try (final Connection con = dataSource.getConnection()) {
+        try (final Connection con = slaveDataSource.getConnection()) {
             final PreparedStatement selectUsers = con.prepareStatement(
                     "SELECT * FROM USERS U LEFT JOIN ADDRESS A ON U.ADDRESS_ID = A.ID WHERE U.NAME LIKE ? and U.SURNAME LIKE ? ORDER BY U.ID;"
 
@@ -161,7 +176,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDataDto getUserDataByUserId(final Long userId) {
         final UserDataDto userDataDto = new UserDataDto();
-        try (final Connection con = dataSource.getConnection()) {
+        try (final Connection con = slaveDataSource.getConnection()) {
             final PreparedStatement selectUser = con.prepareStatement(
                     "SELECT * FROM USERS U LEFT JOIN ADDRESS A ON U.ADDRESS_ID = A.ID WHERE U.ID = ?;"
             );
@@ -194,7 +209,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public RegisterUserDto getByUserName(final String login) {
         final RegisterUserDto registerUserDto = new RegisterUserDto();
-        try (final Connection con = dataSource.getConnection()) {
+        try (final Connection con = masterDataSource.getConnection()) {
             final PreparedStatement selectUser = con.prepareStatement(
                     "SELECT * FROM USERS U LEFT JOIN ADDRESS A ON U.ADDRESS_ID = A.ID WHERE U.LOGIN = ?;"
             );

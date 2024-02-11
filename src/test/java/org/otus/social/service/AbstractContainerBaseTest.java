@@ -14,7 +14,7 @@ class AbstractContainerBaseTest {
     static {
         POSTGRES_CONTAINER = new PostgreSQLContainer<>("postgres:latest")
                 .withUsername("postgres")
-                .withPassword("postgres")
+                .withPassword("pass")
                 .withDatabaseName("postgres");
         POSTGRES_CONTAINER.start();
     }

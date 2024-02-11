@@ -9,17 +9,17 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.otus.social.dto.RegisterUserDto;
 import org.otus.social.dto.UserDataDto;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 @RunWith(SpringRunner.class)
-
 @SpringBootTest
 public class UserServiceImplTest extends AbstractContainerBaseTest{
-
-
+    @Autowired
+    UserServiceImpl userService;
     private static HikariConfig config = new HikariConfig();
     private static HikariDataSource ds;
 
@@ -34,7 +34,7 @@ public class UserServiceImplTest extends AbstractContainerBaseTest{
     }
 
 
-    UserServiceImpl userService = new UserServiceImpl(ds);
+
     @BeforeEach
     public void setupDatabase() {
         Flyway flyway = Flyway.configure().dataSource(POSTGRES_CONTAINER.getJdbcUrl(), POSTGRES_CONTAINER.getUsername(),
@@ -43,6 +43,7 @@ public class UserServiceImplTest extends AbstractContainerBaseTest{
     }
     @Test
     public void registerUserAndGetById () throws SQLException {
+
       final String name = "test_user_name";
       final String surname = "test_user_sur`name";
       RegisterUserDto registerUserDto = new RegisterUserDto();
