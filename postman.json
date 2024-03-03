@@ -139,6 +139,97 @@
         }
       },
       "response": []
+    },
+    {
+      "name": "publish",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{otus-token}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"body\": \"Helloooo\"\n }"
+        },
+        "url": {
+          "raw": "localhost/postPublish",
+          "protocol": "http",
+          "host": [
+            "localhost:8080"
+          ],
+          "path": [
+            "post",
+            "publish"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "getFriendsFeed",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{otus-token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "localhost/getFeed",
+          "protocol": "http",
+          "host": [
+            "localhost:8080"
+          ],
+          "path": [
+            "post",
+            "feed"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "subscription",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{otus-token}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"friendUsername\": \"john_doe\",\n  \"subscription\": \"true\"\n  }"
+        },
+        "url": {
+          "raw": "localhost/friendSubscription",
+          "protocol": "http",
+          "host": [
+            "localhost:8080"
+          ],
+          "path": [
+            "user",
+            "subscribe"
+          ]
+        }
+      },
+      "response": []
     }
   ]
 }

@@ -77,6 +77,22 @@ services:
 #    restart: unless-stopped
 #    depends_on:
 #      - master1
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672" # RabbitMQ main port
+      - "15672:15672" # RabbitMQ management UI
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq # Persist RabbitMQ data
+  redis:
+    image: redis
+    restart: always
+    environment:
+      REDIS_PASSWORD: redis
+    ports:
+      - 6379:6379
 networks:
   pg-network:
     driver: bridge
@@ -84,3 +100,4 @@ volumes:
   master1_data:
   slave1_data:
   slave2_data:
+  rabbitmq_data:

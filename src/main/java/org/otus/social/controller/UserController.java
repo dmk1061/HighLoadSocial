@@ -1,11 +1,16 @@
 package org.otus.social.controller;
 
 import lombok.AllArgsConstructor;
+import org.otus.social.dto.SubscriptionDto;
 import org.otus.social.dto.SearchRequestDto;
 import org.otus.social.dto.UserDataDto;
 import org.otus.social.dto.RegisterUserDto;
+import org.otus.social.service.SubscriptionService;
 import org.otus.social.service.UserService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,6 +27,7 @@ import java.util.List;
 public class UserController {
 
     private  final UserService userService;
+    private final SubscriptionService subscriptionService;
 
     @PostMapping("/register")
     public ResponseEntity<Long> registerUser(@RequestBody final RegisterUserDto registerUserDto) throws SQLException {
@@ -42,7 +48,13 @@ public class UserController {
         return ResponseEntity.ok(userService.getUserDataByUserId(id));
     }
 
-
-
+    @PostMapping("/subscribe")
+    public ResponseEntity<Boolean> subscribe (@RequestBody  final SubscriptionDto subscriptionDto) {
+        final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        final Object principal = authentication.getPrincipal();
+        final String username = (principal instanceof UserDetails) ? ((UserDetails)principal).getUsername() : principal.toString();
+        subscriptionDto.setUsername(username);
+        return  ResponseEntity.ok(subscriptionService.subscribe(subscriptionDto));
+    }
 
 }
