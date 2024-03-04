@@ -199,6 +199,31 @@
       "response": []
     },
     {
+      "name": "warmUp",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{otus-token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "localhost/warmUp",
+          "protocol": "http",
+          "host": [
+            "localhost:8080"
+          ],
+          "path": [
+            "post",
+            "warm"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
       "name": "subscription",
       "request": {
         "method": "POST",

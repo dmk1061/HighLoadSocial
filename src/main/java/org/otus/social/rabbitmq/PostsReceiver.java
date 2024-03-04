@@ -22,16 +22,14 @@ public class PostsReceiver {
     @Qualifier("friends")
     private final RedisTemplate<String, String> redisFriendTemplate;
     private final ObjectMapper objectMapper;
-    private CountDownLatch latch = new CountDownLatch(1);
+    private final CountDownLatch latch = new CountDownLatch(1);
 
     public void receiveMessage(String message) throws JsonProcessingException {
         final PostDto postDto = objectMapper.readValue(message, PostDto.class);
-        final List<String> friends = redisFriendTemplate.opsForList().range(RedisConfig.RELATION_PREFIX + postDto.getUsername(), 0, -1);
+        final List<String> friends = redisFriendTemplate.opsForList().range(RedisConfig.SUBSCRIPTION_PREFIX + postDto.getUsername(), 0, -1);
         for (final String friendUsername : friends) {
-            final List<PostDto> posts = redisPostTemplate.opsForList().range(RedisConfig.FEED_PREFIX + friendUsername, 0, -1);
-            posts.add(postDto);
-            redisPostTemplate.delete(RedisConfig.FEED_PREFIX + friendUsername);
-            redisPostTemplate.opsForList().rightPushAll(RedisConfig.FEED_PREFIX + friendUsername, posts);
+            redisPostTemplate.opsForList().rightPushAll(RedisConfig.FEED_PREFIX + friendUsername, postDto);
+            redisPostTemplate.opsForList().trim(RedisConfig.FEED_PREFIX + friendUsername, -1 *RedisConfig.FEED_LIMIT, -1);
         }
         log.info("Received <" + message + ">");
         latch.countDown();

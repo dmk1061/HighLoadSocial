@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.AllArgsConstructor;
 import org.otus.social.dto.PostDto;
 import org.otus.social.service.PostService;
+import org.otus.social.service.WarmUpService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,11 +20,18 @@ public class PostController {
 
     private final PostService postService;
 
+    private final WarmUpService warmUpService;
+
     @PostMapping("/publish")
     public ResponseEntity<Boolean> publish(@RequestBody final PostDto postDto)  {
         postDto.setUsername(getCurrentUserName());
         postDto.setCreated(LocalDateTime.now());
         return ResponseEntity.ok(postService.publish(postDto));
+    }
+
+    @GetMapping("/warm")
+    public ResponseEntity<Boolean> warmFeed() {
+        return ResponseEntity.ok(warmUpService.feedWarmUp());
     }
 
     @GetMapping("/feed")

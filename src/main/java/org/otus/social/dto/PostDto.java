@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 public class PostDto implements Serializable {
 
     String body;
-
+    //TODO change flow on userID
     String username;
 
     LocalDateTime created;

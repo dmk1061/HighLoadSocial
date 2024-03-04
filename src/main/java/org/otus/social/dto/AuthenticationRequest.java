@@ -1,10 +1,11 @@
 package org.otus.social.dto;
 
 
-import lombok.ToString;
-import lombok.Value;
+import lombok.*;
 
-@Value
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class AuthenticationRequest {
 
     private String login;

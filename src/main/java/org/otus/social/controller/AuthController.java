@@ -29,7 +29,7 @@ public class AuthController {
     private final MyUserDetailService userDetailsService;
     private final JwtUtil jwtUtil;
     @PostMapping("/getToken")
-    public ResponseEntity getToken(@RequestBody final AuthenticationRequest authenticationRequest) {
+    public ResponseEntity getToken(@RequestBody  AuthenticationRequest authenticationRequest) {
         log.info("token request received " + authenticationRequest);
         final RegisterUserDto user;
         if (authenticationRequest.getLogin() != null) {

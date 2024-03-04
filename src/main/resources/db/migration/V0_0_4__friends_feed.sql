@@ -1,23 +1,14 @@
 CREATE TABLE POSTS  (
                        id bigserial primary key,
-                       user_id bigint not null,
+                       username varchar not null,
                        body text not null,
-                       created timestamp,
-                       CONSTRAINT fk_user
-                          FOREIGN KEY(user_id)
-                             REFERENCES USERS(id)
+                       created timestamp
 );
 
-CREATE TABLE RELATION (
+CREATE TABLE SUBSCRIPTION (
                           id bigserial primary key,
-                          user_id bigint not null,
-                          friend_id bigint not null,
-                          CONSTRAINT fk_user
-                            FOREIGN KEY(user_id)
-                              REFERENCES USERS(id),
-                          CONSTRAINT fk_friend
-                            FOREIGN KEY(friend_id)
-                              REFERENCES USERS(id),
-                           UNIQUE(user_id, friend_id)
+                          username varchar not null,
+                          friend_username varchar not null,
+                           UNIQUE(username, friend_username)
 );
 
