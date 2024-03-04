@@ -18,7 +18,7 @@ import java.util.List;
 public class RedisConfig {
     public static final String FEED_PREFIX = "feed";
     public static final String SUBSCRIPTION_PREFIX = "subscription";
-    public static final int FEED_LIMIT = 2;
+    public static final int FEED_LIMIT = 1000;
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
         return new LettuceConnectionFactory();
