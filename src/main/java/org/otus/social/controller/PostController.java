@@ -1,15 +1,18 @@
 package org.otus.social.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.AllArgsConstructor;
 import org.otus.social.dto.PostDto;
 import org.otus.social.service.PostService;
 import org.otus.social.service.WarmUpService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.util.HtmlUtils;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -44,5 +47,12 @@ public class PostController {
         final Object principal = authentication.getPrincipal();
         return (principal instanceof UserDetails) ? ((UserDetails) principal).getUsername() : principal.toString();
     }
+    @MessageMapping("/hello")
+    @SendTo("/topic/greetings")
+    public PostDto greeting(PostDto message) throws Exception {
+        Thread.sleep(1000); // simulated delay
+        return new PostDto("Hello, " + HtmlUtils.htmlEscape(message.getUsername()) + "!", "", LocalDateTime.now());
+    }
+
 
 }

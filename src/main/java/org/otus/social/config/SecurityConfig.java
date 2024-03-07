@@ -33,8 +33,8 @@ public class SecurityConfig {
                 .authorizeRequests()
                 .requestMatchers("/auth/get").permitAll()
                 .requestMatchers("/auth/getToken").permitAll()
-                .anyRequest()
-                .authenticated()
+                .anyRequest().permitAll()
+                //.authenticated()
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
