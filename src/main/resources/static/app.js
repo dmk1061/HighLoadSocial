@@ -3,9 +3,10 @@ const stompClient = new StompJs.Client({
 });
 
 stompClient.onConnect = (frame) => {
+    var username = $("#name").val();
     setConnected(true);
     console.log('Connected: ' + frame);
-    stompClient.subscribe('/topic/greetings', (greeting) => {
+    stompClient.subscribe('/topic/greetings/' +username, (greeting) => {
         showGreeting(JSON.parse(greeting.body));
     });
 };

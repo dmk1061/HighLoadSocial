@@ -48,7 +48,7 @@ public class PostController {
         return (principal instanceof UserDetails) ? ((UserDetails) principal).getUsername() : principal.toString();
     }
     @MessageMapping("/hello")
-    @SendTo("/topic/greetings")
+    @SendTo("/topic/greetings/john_doe")
     public PostDto greeting(PostDto message) throws Exception {
         Thread.sleep(1000); // simulated delay
         return new PostDto("Hello, " + HtmlUtils.htmlEscape(message.getUsername()) + "!", "", LocalDateTime.now());

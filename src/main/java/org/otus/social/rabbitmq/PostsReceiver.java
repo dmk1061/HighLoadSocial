@@ -18,6 +18,7 @@ import java.util.concurrent.CountDownLatch;
 @RequiredArgsConstructor
 @Slf4j
 public class PostsReceiver {
+    public static final String NEW_POST ="/topic/greetings/";
 
     @Qualifier("posts")
     private final RedisTemplate<String, PostDto> redisPostTemplate;
@@ -33,7 +34,7 @@ public class PostsReceiver {
             for (final String friendUsername : friends) {
                 redisPostTemplate.opsForList().rightPushAll(RedisConfig.FEED_PREFIX + friendUsername, postDto);
                 redisPostTemplate.opsForList().trim(RedisConfig.FEED_PREFIX + friendUsername, -1 * RedisConfig.FEED_LIMIT, -1);
-                simpMessagingTemplate.convertAndSend("/topic/greetings", postDto);
+                simpMessagingTemplate.convertAndSend( NEW_POST+friendUsername, postDto);
             }
             log.info("Received <" + message + ">");
             latch.countDown();
