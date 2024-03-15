@@ -1,6 +1,5 @@
-class Utils {
-    def testing() {
+
+def testing() {
         println("testing external file succes")
 
-    }
 }
