@@ -45,7 +45,7 @@ external:
       protocol: https
 
 database:
-  host: database-1.cto42800ya8p.eu-north-1.rds.amazonaws.com
+  host: database-1.cto42800ya8p.eu-north-2.rds.amazonaws.com
   ip: '101.53.246.109'
   port: 5432
   name: esmappift1
