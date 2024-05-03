@@ -24,3 +24,20 @@ box.space.users:insert({2, 'Alice', 'Smith', 30, 'F', 2,{}, 'alice_smith', 'hash
 box.space.users:insert({3, 'Bob', 'Johnson', 22, 'M', 3, {},'bob_johnson', 'hashed_password_3'})
 box.space.users:insert({4, 'Eva', 'Brown', 28, 'F', 4, {},'eva_brown', 'hashed_password_4'})
 box.space.users:insert({5, 'Michael', 'Jones', 35, '', 5,{}, 'michael_jones', 'hashed_password_5'})
+
+function get_user_data(user_id)
+    local user_data = box.space.users:select{user_id}
+    if #user_data > 0 then
+        local user = user_data[1]
+        return {
+            name = user[2],
+            surname = user[3],
+            age = user[4],
+            sex = user[5],
+            city = user[6],
+            interests = {}
+        }
+    else
+        return nil
+    end
+end

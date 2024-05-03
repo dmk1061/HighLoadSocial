@@ -26,7 +26,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -186,23 +188,20 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDataDto getUserDataByUserIdInMemory(final Long userId) {
         final UserDataDto userDataDto = new UserDataDto();
-        try{
-            TarantoolTupleFactory tupleFactory =
-                    new DefaultTarantoolTupleFactory(mapperFactory.defaultComplexTypesMapper());
-            TarantoolSpaceOperations<TarantoolTuple, TarantoolResult<TarantoolTuple>> regionSpace =
-                    client.space("users");
-            TarantoolResult<TarantoolTuple> selectTuples =
-                    regionSpace.select(Conditions.equals("id", userId)).get();
-            TarantoolTuple selectTuple =  selectTuples.get(0);
-            int c=9;
-            userDataDto.setName(selectTuples.get(0).getString(1));
-            userDataDto.setSurname(selectTuples.get(0).getString(2));
-            userDataDto.setAge(Long.valueOf(selectTuples.get(0).getInteger(3)));
-            userDataDto.setSex(selectTuples.get(0).getString(4));
-            userDataDto.setCity(selectTuples.get(0).getInteger(5).toString());
-            userDataDto.setInterests(new ArrayList<String>());
+        try {
+            List result =client.call("get_user_data", Collections.singletonList(userId)).get();
+            if (!result.isEmpty()) {
+                Map<String, Object> userData = (Map<String, Object>) result.get(0);
+                userDataDto.setName((String) userData.get("name"));
+                userDataDto.setSurname((String) userData.get("surname"));
+                userDataDto.setAge(((Integer)userData.get("age")).longValue());
+                userDataDto.setSex((String) userData.get("sex"));
+                userDataDto.setCity(userData.get("city").toString());
+                userDataDto.setInterests(new ArrayList<>());
+            }
         } catch (Exception e) {
-            int f = 0;
+
+            e.printStackTrace();
         }
         return userDataDto;
     }
