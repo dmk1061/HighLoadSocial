@@ -1,5 +1,13 @@
 package org.otus.social.service;
 
+import io.tarantool.driver.api.TarantoolClient;
+import io.tarantool.driver.api.TarantoolResult;
+import io.tarantool.driver.api.conditions.Conditions;
+import io.tarantool.driver.api.space.TarantoolSpaceOperations;
+import io.tarantool.driver.api.tuple.DefaultTarantoolTupleFactory;
+import io.tarantool.driver.api.tuple.TarantoolTuple;
+import io.tarantool.driver.api.tuple.TarantoolTupleFactory;
+import io.tarantool.driver.mappers.factories.DefaultMessagePackMapperFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.otus.social.dto.SearchRequestDto;
@@ -32,6 +40,10 @@ public class UserServiceImpl implements UserService {
     @Qualifier("slaveDataSource")
     private final DataSource slaveDataSource;
     PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+    private final TarantoolClient client;
+
+    private static final DefaultMessagePackMapperFactory mapperFactory = DefaultMessagePackMapperFactory.getInstance();
 
 
     public DataSource getDataSource (boolean master){
@@ -171,7 +183,29 @@ public class UserServiceImpl implements UserService {
 
 
     }
-
+    @Override
+    public UserDataDto getUserDataByUserIdInMemory(final Long userId) {
+        final UserDataDto userDataDto = new UserDataDto();
+        try{
+            TarantoolTupleFactory tupleFactory =
+                    new DefaultTarantoolTupleFactory(mapperFactory.defaultComplexTypesMapper());
+            TarantoolSpaceOperations<TarantoolTuple, TarantoolResult<TarantoolTuple>> regionSpace =
+                    client.space("users");
+            TarantoolResult<TarantoolTuple> selectTuples =
+                    regionSpace.select(Conditions.equals("id", userId)).get();
+            TarantoolTuple selectTuple =  selectTuples.get(0);
+            int c=9;
+            userDataDto.setName(selectTuples.get(0).getString(1));
+            userDataDto.setSurname(selectTuples.get(0).getString(2));
+            userDataDto.setAge(Long.valueOf(selectTuples.get(0).getInteger(3)));
+            userDataDto.setSex(selectTuples.get(0).getString(4));
+            userDataDto.setCity(selectTuples.get(0).getInteger(5).toString());
+            userDataDto.setInterests(new ArrayList<String>());
+        } catch (Exception e) {
+            int f = 0;
+        }
+        return userDataDto;
+    }
 
     @Override
     public UserDataDto getUserDataByUserId(final Long userId) {
@@ -190,16 +224,16 @@ public class UserServiceImpl implements UserService {
                 userDataDto.setCity(selectedUsers.getString(10));
                 userDataDto.setInterests(new ArrayList<String>());
             }
-            final PreparedStatement selectInterests = con.prepareStatement(
-                    " SELECT * FROM USER_INTEREST UI LEFT JOIN INTEREST I ON UI.INTEREST_ID = I.ID WHERE USER_ID = ?;"
-            );
-            selectInterests.setLong(1, userId);
-            try (ResultSet rs = selectInterests.executeQuery();) {
-                while (rs.next()) {
-                    userDataDto.getInterests().add(rs.getString(5));
-                    ;
-                }
-            }
+//            final PreparedStatement selectInterests = con.prepareStatement(
+//                    " SELECT * FROM USER_INTEREST UI LEFT JOIN INTEREST I ON UI.INTEREST_ID = I.ID WHERE USER_ID = ?;"
+//            );
+//            selectInterests.setLong(1, userId);
+//            try (ResultSet rs = selectInterests.executeQuery();) {
+//                while (rs.next()) {
+//                    userDataDto.getInterests().add(rs.getString(5));
+//                    ;
+//                }
+//            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

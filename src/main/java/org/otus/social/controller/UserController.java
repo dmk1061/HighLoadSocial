@@ -48,6 +48,11 @@ public class UserController {
         return ResponseEntity.ok(userService.getUserDataByUserId(id));
     }
 
+     @GetMapping("/getInMemory/{id}")
+     public ResponseEntity<UserDataDto> getUserDataByIdInMemory (@PathVariable("id") final Long id) {
+         return ResponseEntity.ok(userService.getUserDataByUserIdInMemory(id));
+     }
+
     @PostMapping("/subscribe")
     public ResponseEntity<Boolean> subscribe (@RequestBody  final SubscriptionDto subscriptionDto) {
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

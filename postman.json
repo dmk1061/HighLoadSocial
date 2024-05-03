@@ -75,6 +75,32 @@
       "response": []
     },
     {
+      "name": "getUserDataByIdInMemory",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{otus-token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "localhost/getUserDateById/InMemory",
+          "protocol": "http",
+          "host": [
+            "localhost:8080"
+          ],
+          "path": [
+            "user",
+            "getInMemory",
+            "2"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
       "name": "registerUser",
       "request": {
         "method": "POST",

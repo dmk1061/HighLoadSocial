@@ -13,7 +13,9 @@ public interface UserService {
 
      List<UserDataDto> search(SearchRequestDto searchRequestDto);
 
-     UserDataDto getUserDataByUserId (Long id);
+    UserDataDto getUserDataByUserIdInMemory(Long userId);
+
+    UserDataDto getUserDataByUserId (Long id);
 
      RegisterUserDto getByUserName (String login);
 

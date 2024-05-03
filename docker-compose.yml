@@ -96,6 +96,14 @@ services:
     volumes:
       - ./redis.conf:/usr/local/etc/redis/redis.conf
     command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+  tarantool:
+    container_name: mytarantool
+    image: tarantool/tarantool:latest
+    environment:
+      TARANTOOL_USER_NAME: "admin"
+      TARANTOOL_USER_PASSWORD: "admin"
+    ports:
+      - 3301:3301
 networks:
   pg-network:
     driver: bridge

@@ -1,0 +1,26 @@
+tt connect localhost:3301
+box.schema.space.create('users')
+box.space.users:format({
+    { name = 'id', type = 'unsigned' },
+    { name = 'first_name', type = 'string' },
+    { name = 'last_name', type = 'string' },
+    { name = 'age', type = 'unsigned' },
+    { name = 'sex', type = 'string' },
+    { name = 'city', type = 'unsigned' },
+    { name = 'interests', type = 'array', is_nullable = true }, -- Define interests as an array and allow it to be nullable
+    { name = 'login', type = 'string' },
+    { name = 'password', type = 'string' }
+})
+
+box.space.users:create_index('primary', { parts = { 'id' } })
+
+if not box.space.users then
+    box.schema.space.create('users')
+end
+
+-- Insert data into the users space
+box.space.users:insert({1, 'John', 'Doe', 25, 'M', 1, {}, 'john_doe', 'hashed_password_1'})
+box.space.users:insert({2, 'Alice', 'Smith', 30, 'F', 2,{}, 'alice_smith', 'hashed_password_2'})
+box.space.users:insert({3, 'Bob', 'Johnson', 22, 'M', 3, {},'bob_johnson', 'hashed_password_3'})
+box.space.users:insert({4, 'Eva', 'Brown', 28, 'F', 4, {},'eva_brown', 'hashed_password_4'})
+box.space.users:insert({5, 'Michael', 'Jones', 35, '', 5,{}, 'michael_jones', 'hashed_password_5'})

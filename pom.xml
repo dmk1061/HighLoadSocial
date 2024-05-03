@@ -112,6 +112,11 @@
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
+        <dependency>
+            <groupId>io.tarantool</groupId>
+            <artifactId>cartridge-driver</artifactId>
+            <version>0.13.0</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
