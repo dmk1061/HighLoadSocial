@@ -1,0 +1,109 @@
+ab -n 10000 -c 100 -H "Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huX2RvZSIsInVzZXJfaWQiOiIxIiwiZXhwIjoxNzE0NzU2OTI2LCJpYXQiOjE3MTQ3MjA5MjZ9.DEcoUSjOIfPEqBaek17XMDrJ7VUPghH91XUSaBe1670" http://localhost:8080/user/getInMemory/3
+This is ApacheBench, Version 2.3 <$Revision: 1879490 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking localhost (be patient)
+Completed 1000 requests
+Completed 2000 requests
+Completed 3000 requests
+Completed 4000 requests
+Completed 5000 requests
+Completed 6000 requests
+Completed 7000 requests
+Completed 8000 requests
+Completed 9000 requests
+Completed 10000 requests
+Finished 10000 requests
+
+
+Server Software:
+Server Hostname:        localhost
+Server Port:            8080
+
+Document Path:          /user/getInMemory/3
+Document Length:        79 bytes
+
+Concurrency Level:      100
+Time taken for tests:   3.207 seconds
+Complete requests:      10000
+Failed requests:        0
+Total transferred:      3540000 bytes
+HTML transferred:       790000 bytes
+Requests per second:    3118.05 [#/sec] (mean)
+Time per request:       32.071 [ms] (mean)
+Time per request:       0.321 [ms] (mean, across all concurrent requests)
+Transfer rate:          1077.92 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0    4   3.7      4      24
+Processing:     3   27  11.0     26     106
+Waiting:        2   24  11.1     23     105
+Total:          6   32  10.9     31     107
+
+Percentage of the requests served within a certain time (ms)
+  50%     31
+  66%     35
+  75%     38
+  80%     40
+  90%     46
+  95%     51
+  98%     59
+  99%     64
+ 100%    107 (longest request)
+========================================================================================
+ab -n 10000 -c 100 -H "Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huX2RvZSIsInVzZXJfaWQiOiIxIiwiZXhwIjoxNzE0NzU2OTI2LCJpYXQiOjE3MTQ3MjA5MjZ9.DEcoUSjOIfPEqBaek17XMDrJ7VUPghH91XUSaBe1670" http://localhost:8080/user/get/3
+This is ApacheBench, Version 2.3 <$Revision: 1879490 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking localhost (be patient)
+Completed 1000 requests
+Completed 2000 requests
+Completed 3000 requests
+Completed 4000 requests
+Completed 5000 requests
+Completed 6000 requests
+Completed 7000 requests
+Completed 8000 requests
+Completed 9000 requests
+Completed 10000 requests
+Finished 10000 requests
+
+
+Server Software:
+Server Hostname:        localhost
+Server Port:            8080
+
+Document Path:          /user/get/3
+Document Length:        84 bytes
+
+Concurrency Level:      100
+Time taken for tests:   2.248 seconds
+Complete requests:      10000
+Failed requests:        0
+Total transferred:      3590000 bytes
+HTML transferred:       840000 bytes
+Requests per second:    4448.65 [#/sec] (mean)
+Time per request:       22.479 [ms] (mean)
+Time per request:       0.225 [ms] (mean, across all concurrent requests)
+Transfer rate:          1559.63 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0    5   2.9      4      15
+Processing:     2   18   7.9     16      73
+Waiting:        1   15   7.4     13      69
+Total:          3   22   7.3     22      83
+
+Percentage of the requests served within a certain time (ms)
+  50%     22
+  66%     24
+  75%     26
+  80%     27
+  90%     31
+  95%     35
+  98%     39
+  99%     44
+ 100%     83 (longest request)

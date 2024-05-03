@@ -1,3 +1,9 @@
+Поднимаем тарантул из docker-compose
+sudo apt-get install tt
+далее настраиваем space  и заливаем туда данные
+
+
+
 tt connect localhost:3301
 box.schema.space.create('users')
 box.space.users:format({
@@ -41,3 +47,8 @@ function get_user_data(user_id)
         return nil
     end
 end
+
+запускаем приложение
+
+PS  Вынес один ендпоинт, чтобы просто протестировать работу и нагрузку. В задании сказано вынести какой-нибудь модуль, например диалоги.
+Такого модуль мы еще не писали. Лента постов у меня и так на редисе :)
