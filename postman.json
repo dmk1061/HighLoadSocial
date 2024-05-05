@@ -1,286 +1,380 @@
 {
-  "info": {
-    "_postman_id": "aadc788e-b8d6-42ab-a9cb-1d58c2d80c97",
-    "name": "Otus-Social",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_exporter_id": "2780766"
-  },
-  "item": [
-    {
-      "name": "getJwtToken",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\"login\": \"john_doe\", \"password\": \"hashed_password_1\"}"
-        },
-        "url": {
-          "raw": "localhost/getToken",
-          "protocol": "http",
-          "host": [
-            "localhost:8080"
-          ],
-          "path": [
-            "auth",
-            "getToken"
-          ]
-        }
-      },
-      "response": [],
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "type": "text/javascript",
-            "exec": [
-              "// Parse the response JSON",
-              "var jsonResponse = JSON.parse(responseBody);",
-              "// Set a global variable with a value from the response",
-              "pm.environment.set('otus-token', pm.response.json().jwt);"
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "name": "getUserDataById",
-      "request": {
-        "method": "GET",
-        "header": [
-          {
-            "key": "Authorization",
-            "value": "Bearer {{otus-token}}",
-            "type": "text"
-          }
-        ],
-        "url": {
-          "raw": "localhost/getUserDateById",
-          "protocol": "http",
-          "host": [
-            "localhost:8080"
-          ],
-          "path": [
-            "user",
-            "get",
-            "2"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "getUserDataByIdInMemory",
-      "request": {
-        "method": "GET",
-        "header": [
-          {
-            "key": "Authorization",
-            "value": "Bearer {{otus-token}}",
-            "type": "text"
-          }
-        ],
-        "url": {
-          "raw": "localhost/getUserDateById/InMemory",
-          "protocol": "http",
-          "host": [
-            "localhost:8080"
-          ],
-          "path": [
-            "user",
-            "getInMemory",
-            "2"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "registerUser",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Authorization",
-            "value": "Bearer {{otus-token}}",
-            "type": "text"
-          },
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"id\": 123,\n  \"name\": \"Jimmy\",\n  \"surname\": \"Doe\",\n  \"age\": 30,\n  \"sex\": \"M\",\n  \"city\": \"New York\",\n  \"interests\": [\"Reading\", \"Traveling\", \"Sports\"],\n  \"login\": \"jim_doe\",\n  \"password\": \"secure_password\"\n}"
-        },
-        "url": {
-          "raw": "localhost/registerUser",
-          "protocol": "http",
-          "host": [
-            "localhost:8080"
-          ],
-          "path": [
-            "user",
-            "register"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "searchUsers",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Authorization",
-            "value": "Bearer {{otus-token}}",
-            "type": "text"
-          },
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n    \"first_name\": \"Алекс\",\n  \"last_name\": \"Абр\"\n }"
-        },
-        "url": {
-          "raw": "localhost/searchUser",
-          "protocol": "http",
-          "host": [
-            "localhost:8080"
-          ],
-          "path": [
-            "user",
-            "search"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "publish",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Authorization",
-            "value": "Bearer {{otus-token}}",
-            "type": "text"
-          },
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n    \"body\": \"Helloooo\"\n }"
-        },
-        "url": {
-          "raw": "localhost/postPublish",
-          "protocol": "http",
-          "host": [
-            "localhost:8080"
-          ],
-          "path": [
-            "post",
-            "publish"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "getFriendsFeed",
-      "request": {
-        "method": "GET",
-        "header": [
-          {
-            "key": "Authorization",
-            "value": "Bearer {{otus-token}}",
-            "type": "text"
-          }
-        ],
-        "url": {
-          "raw": "localhost/getFeed",
-          "protocol": "http",
-          "host": [
-            "localhost:8080"
-          ],
-          "path": [
-            "post",
-            "feed"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "warmUp",
-      "request": {
-        "method": "GET",
-        "header": [
-          {
-            "key": "Authorization",
-            "value": "Bearer {{otus-token}}",
-            "type": "text"
-          }
-        ],
-        "url": {
-          "raw": "localhost/warmUp",
-          "protocol": "http",
-          "host": [
-            "localhost:8080"
-          ],
-          "path": [
-            "post",
-            "warm"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "subscription",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Authorization",
-            "value": "Bearer {{otus-token}}",
-            "type": "text"
-          },
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n    \"friendUsername\": \"john_doe\",\n  \"subscription\": \"true\"\n  }"
-        },
-        "url": {
-          "raw": "localhost/friendSubscription",
-          "protocol": "http",
-          "host": [
-            "localhost:8080"
-          ],
-          "path": [
-            "user",
-            "subscribe"
-          ]
-        }
-      },
-      "response": []
-    }
-  ]
+	"info": {
+		"_postman_id": "1decf7db-53e3-4316-920b-866283d728dc",
+		"name": "Otus-Social",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "2780766"
+	},
+	"item": [
+		{
+			"name": "getJwtToken",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"// Parse the response JSON",
+							"var jsonResponse = JSON.parse(responseBody);",
+							"// Set a global variable with a value from the response",
+							"pm.environment.set('otus-token', pm.response.json().jwt);"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"login\": \"john_doe\", \"password\": \"hashed_password_1\"}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/auth/getToken",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"auth",
+						"getToken"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getUserDataById",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{otus-token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/user/get/2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"user",
+						"get",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "registerUser",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{otus-token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"id\": 123,\n  \"name\": \"Jimmy\",\n  \"surname\": \"Doe\",\n  \"age\": 30,\n  \"sex\": \"M\",\n  \"city\": \"New York\",\n  \"interests\": [\"Reading\", \"Traveling\", \"Sports\"],\n  \"login\": \"jim_doe\",\n  \"password\": \"secure_password\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/user/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"user",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "searchUsers",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{otus-token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"first_name\": \"Алекс\",\n  \"last_name\": \"Абр\"\n }"
+				},
+				"url": {
+					"raw": "http://localhost:8080/user/search",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"user",
+						"search"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "publish",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{otus-token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"body\": \"Helloooo\"\n }"
+				},
+				"url": {
+					"raw": "http://localhost:8080/post/publish",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"post",
+						"publish"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getFriendsFeed",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{otus-token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/post/feed",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"post",
+						"feed"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "warmUp",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{otus-token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/post/warm",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"post",
+						"warm"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "subscription",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{otus-token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"friendUsername\": \"john_doe\",\n  \"subscription\": \"true\"\n  }"
+				},
+				"url": {
+					"raw": "http://localhost:8080/user/subscribe",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"user",
+						"subscribe"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "sentDialogMessage",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Parse the response JSON",
+							"var jsonResponse = JSON.parse(responseBody);",
+							"// Set a global variable with a value from the response",
+							"pm.environment.set('otus-token', pm.response.json().jwt);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huX2RvZSIsInVzZXJfaWQiOiIxIiwiZXhwIjoxNzE0OTQ4OTExLCJpYXQiOjE3MTQ5MTI5MTF9.i3LR55IkT9SPlNpvZf_15ER4OB2ebYjXYl1_azNEdxM",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"toUser\": \"alice_smith\", \"body\": \"hashed_password_1\"}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/dialog/sent",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"dialog",
+						"sent"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getDialog",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Parse the response JSON",
+							"var jsonResponse = JSON.parse(responseBody);",
+							"// Set a global variable with a value from the response",
+							"pm.environment.set('otus-token', pm.response.json().jwt);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huX2RvZSIsInVzZXJfaWQiOiIxIiwiZXhwIjoxNzE0OTQ4OTExLCJpYXQiOjE3MTQ5MTI5MTF9.i3LR55IkT9SPlNpvZf_15ER4OB2ebYjXYl1_azNEdxM",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"toUser\": \"alice_smith\", \"body\": \"hashed_password_1\"}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/dialog/get/2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"dialog",
+						"get",
+						"2"
+					]
+				}
+			},
+			"response": []
+		}
+	]
 }

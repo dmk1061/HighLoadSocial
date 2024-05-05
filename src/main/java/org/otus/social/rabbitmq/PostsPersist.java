@@ -25,14 +25,14 @@ public class PostsPersist {
     @Qualifier("masterDataSource")
     private final DataSource masterDataSource;
 
-    private CountDownLatch latch = new CountDownLatch(1);
+  //  private CountDownLatch latch = new CountDownLatch(1);
 
     public void receiveMessage(byte[] byteArray) throws JsonProcessingException {
         String message = new String(byteArray, StandardCharsets.UTF_8); try {
         final PostDto postDto = objectMapper.readValue(message, PostDto.class);
         persistPost(postDto);
         log.info("Received <" + message + ">");
-        latch.countDown();
+ //       latch.countDown();
         }catch (Exception e){
             log.error("PostReceiver error " + e.getMessage());
         }
@@ -49,7 +49,7 @@ public class PostsPersist {
             log.error("Error during subscription persistence");
         }
     }
-    public CountDownLatch getLatch() {
-        return latch;
-    }
+//    public CountDownLatch getLatch() {
+//        return latch;
+//    }
 }
