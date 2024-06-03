@@ -40,8 +40,8 @@ public class PostsPersist {
     public void persistPost (final PostDto postDto){
         try(final Connection con = masterDataSource.getConnection()) {
             try (final PreparedStatement insertSubscription = con.prepareStatement(
-                    "INSERT INTO POSTS (USERNAME, BODY, CREATED) VALUES (?,?,NOW())", Statement.RETURN_GENERATED_KEYS)) {
-                insertSubscription.setString(1, postDto.getUsername());
+                    "INSERT INTO POSTS (USER_ID, BODY, CREATED) VALUES (?,?,NOW())", Statement.RETURN_GENERATED_KEYS)) {
+                insertSubscription.setLong(1, postDto.getUserId());
                 insertSubscription.setString(2, postDto.getBody());
                 insertSubscription.executeUpdate();
             }

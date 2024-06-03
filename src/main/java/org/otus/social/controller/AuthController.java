@@ -32,13 +32,13 @@ public class AuthController {
     public ResponseEntity getToken(@RequestBody  AuthenticationRequest authenticationRequest) {
         log.info("token request received " + authenticationRequest);
         final RegisterUserDto user;
-        if (authenticationRequest.getLogin() != null) {
-            user = userDetailsService.loadUserDataByUsername(authenticationRequest.getLogin());
+        if (authenticationRequest.getUsername() != null) {
+            user = userDetailsService.loadUserDataByUsername(authenticationRequest.getUsername());
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email or phone  wasn't provided in request");
         }
         try {
-            final Authentication authentication = new UsernamePasswordAuthenticationToken(user.getLogin(), authenticationRequest.getPassword());
+            final Authentication authentication = new UsernamePasswordAuthenticationToken(user.getUsername(), authenticationRequest.getPassword());
             authenticationManager.authenticate(authentication);
             final UserDetails userDetails = userDetailsService.loadUserByUsername(authentication.getName());
             final String jwt = jwtUtil.generateToken(userDetails, user.getId().toString());

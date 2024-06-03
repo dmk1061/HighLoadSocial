@@ -14,7 +14,7 @@ box.space.users:format({
     { name = 'sex', type = 'string' },
     { name = 'city', type = 'unsigned' },
     { name = 'interests', type = 'array', is_nullable = true }, -- Define interests as an array and allow it to be nullable
-    { name = 'login', type = 'string' },
+    { name = 'username', type = 'string' },
     { name = 'password', type = 'string' }
 })
 

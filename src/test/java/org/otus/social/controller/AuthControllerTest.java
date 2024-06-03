@@ -50,11 +50,11 @@ public class AuthControllerTest {
 
         RegisterUserDto registerUserDto = new RegisterUserDto();
         registerUserDto.setPassword("hashed_password_1");
-        registerUserDto.setLogin("john_doe");
+        registerUserDto.setUsername("john_doe");
         registerUserDto.setId(1L);
         AuthenticationRequest authenticationRequest = new AuthenticationRequest("john_doe", "hashed_password_1--");
-        given(userDetailsService.loadUserDataByUsername(authenticationRequest.getLogin())).willReturn(registerUserDto);
-        given(userDetailsService.loadUserByUsername(authenticationRequest.getLogin())).willReturn(new User(registerUserDto.getLogin(),
+        given(userDetailsService.loadUserDataByUsername(authenticationRequest.getUsername())).willReturn(registerUserDto);
+        given(userDetailsService.loadUserByUsername(authenticationRequest.getUsername())).willReturn(new User(registerUserDto.getUsername(),
                 registerUserDto.getPassword(), new ArrayList<>()) {
         });
 

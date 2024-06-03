@@ -12,17 +12,21 @@
 				{
 					"listen": "test",
 					"script": {
-						"type": "text/javascript",
 						"exec": [
 							"// Parse the response JSON",
 							"var jsonResponse = JSON.parse(responseBody);",
 							"// Set a global variable with a value from the response",
 							"pm.environment.set('otus-token', pm.response.json().jwt);"
-						]
+						],
+						"type": "text/javascript",
+						"packages": {}
 					}
 				}
 			],
 			"request": {
+				"auth": {
+					"type": "noauth"
+				},
 				"method": "POST",
 				"header": [
 					{
@@ -32,7 +36,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\"login\": \"john_doe\", \"password\": \"hashed_password_1\"}"
+					"raw": "{\"username\": \"john_doe\", \"password\": \"hashed_password_1\"}"
 				},
 				"url": {
 					"raw": "http://localhost:8080/auth/getToken",
@@ -44,67 +48,6 @@
 					"path": [
 						"auth",
 						"getToken"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "getUserDataById",
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "Bearer {{otus-token}}",
-						"type": "text"
-					}
-				],
-				"url": {
-					"raw": "http://localhost:8080/user/get/2",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"user",
-						"get",
-						"2"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "registerUser",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "Bearer {{otus-token}}",
-						"type": "text"
-					},
-					{
-						"key": "Content-Type",
-						"value": "application/json"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n  \"id\": 123,\n  \"name\": \"Jimmy\",\n  \"surname\": \"Doe\",\n  \"age\": 30,\n  \"sex\": \"M\",\n  \"city\": \"New York\",\n  \"interests\": [\"Reading\", \"Traveling\", \"Sports\"],\n  \"login\": \"jim_doe\",\n  \"password\": \"secure_password\"\n}"
-				},
-				"url": {
-					"raw": "http://localhost:8080/user/register",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"user",
-						"register"
 					]
 				}
 			},
@@ -181,6 +124,16 @@
 		{
 			"name": "getFriendsFeed",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huX2RvZSIsInVzZXJfaWQiOiIxIiwiZXhwIjoxNzE3NDgxNDk0LCJpYXQiOjE3MTc0NDU0OTR9.Qn0qn8nr5qiz9g6Y3B8aZSf2MHrFxLi5qlLEs7nsHas",
+							"type": "string"
+						}
+					]
+				},
 				"method": "GET",
 				"header": [
 					{
@@ -207,6 +160,16 @@
 		{
 			"name": "warmUp",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huX2RvZSIsInVzZXJfaWQiOiIxIiwiZXhwIjoxNzE3NDgxNDk0LCJpYXQiOjE3MTc0NDU0OTR9.Qn0qn8nr5qiz9g6Y3B8aZSf2MHrFxLi5qlLEs7nsHas",
+							"type": "string"
+						}
+					]
+				},
 				"method": "GET",
 				"header": [
 					{
@@ -233,6 +196,16 @@
 		{
 			"name": "subscription",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huX2RvZSIsInVzZXJfaWQiOiIxIiwiZXhwIjoxNzE3NDgwODY4LCJpYXQiOjE3MTc0NDQ4Njh9.fkqUig4my0PJJ4eX7d7R3KO-9np8RV7RpyM04i0swIo",
+							"type": "string"
+						}
+					]
+				},
 				"method": "POST",
 				"header": [
 					{
@@ -247,7 +220,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"friendUsername\": \"john_doe\",\n  \"subscription\": \"true\"\n  }"
+					"raw": "{\n    \"friendId\": \"7\",\n  \"subscription\": \"true\"\n  }"
 				},
 				"url": {
 					"raw": "http://localhost:8080/user/subscribe",
@@ -287,7 +260,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huX2RvZSIsInVzZXJfaWQiOiIxIiwiZXhwIjoxNzE0OTQ4OTExLCJpYXQiOjE3MTQ5MTI5MTF9.i3LR55IkT9SPlNpvZf_15ER4OB2ebYjXYl1_azNEdxM",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huX2RvZSIsInVzZXJfaWQiOiIxIiwiZXhwIjoxNzE3NDgwODY4LCJpYXQiOjE3MTc0NDQ4Njh9.fkqUig4my0PJJ4eX7d7R3KO-9np8RV7RpyM04i0swIo",
 							"type": "string"
 						}
 					]
@@ -297,6 +270,11 @@
 					{
 						"key": "Content-Type",
 						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{otus-token}}",
+						"type": "text"
 					}
 				],
 				"body": {
@@ -319,38 +297,18 @@
 			"response": []
 		},
 		{
-			"name": "getDialog",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"// Parse the response JSON",
-							"var jsonResponse = JSON.parse(responseBody);",
-							"// Set a global variable with a value from the response",
-							"pm.environment.set('otus-token', pm.response.json().jwt);"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
+			"name": "registerUser",
 			"request": {
 				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huX2RvZSIsInVzZXJfaWQiOiIxIiwiZXhwIjoxNzE0OTQ4OTExLCJpYXQiOjE3MTQ5MTI5MTF9.i3LR55IkT9SPlNpvZf_15ER4OB2ebYjXYl1_azNEdxM",
-							"type": "string"
-						}
-					]
+					"type": "noauth"
 				},
-				"method": "GET",
+				"method": "POST",
 				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{otus-token}}",
+						"type": "text"
+					},
 					{
 						"key": "Content-Type",
 						"value": "application/json"
@@ -358,8 +316,37 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\"toUser\": \"alice_smith\", \"body\": \"hashed_password_1\"}"
+					"raw": "{\n  \"id\": 123,\n  \"name\": \"Jimmy\",\n  \"surname\": \"Doe\",\n  \"age\": 30,\n  \"sex\": \"M\",\n  \"city\": \"home\",\n  \"username\": \"jim_jdoe\",\n  \"password\": \"secure_password\"\n}"
 				},
+				"url": {
+					"raw": "http://localhost:8080/user/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"user",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getUserDialogById",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{otus-token}}",
+						"type": "text"
+					}
+				],
 				"url": {
 					"raw": "http://localhost:8080/dialog/get/2",
 					"protocol": "http",
@@ -369,6 +356,33 @@
 					"port": "8080",
 					"path": [
 						"dialog",
+						"get",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getUserDataById",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{otus-token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/user/get/2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"user",
 						"get",
 						"2"
 					]

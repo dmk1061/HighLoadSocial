@@ -27,17 +27,17 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     @Override
     public boolean subscribe(final SubscriptionDto subscriptionDto) {
 
-        final List<String> friends = redisTemplate.opsForList().range(RedisConfig.SUBSCRIPTION_PREFIX + subscriptionDto.getUsername(), 0, -1);
-        redisTemplate.delete(RedisConfig.SUBSCRIPTION_PREFIX + subscriptionDto.getUsername());
+        final List<Long> friends = redisTemplate.opsForList().range(RedisConfig.SUBSCRIPTION_PREFIX + subscriptionDto.getUserId(), 0, -1);
+        redisTemplate.delete(RedisConfig.SUBSCRIPTION_PREFIX + subscriptionDto.getUserId());
 
         if (subscriptionDto.isSubscription()) {
-            if (!friends.contains(subscriptionDto.getFriendUsername())) {
-                friends.add(subscriptionDto.getFriendUsername());
-                redisTemplate.opsForList().rightPushAll(RedisConfig.SUBSCRIPTION_PREFIX + subscriptionDto.getUsername(), friends);
+            if (!friends.contains(subscriptionDto.getFriendId())) {
+                friends.add(subscriptionDto.getFriendId());
+                redisTemplate.opsForList().rightPushAll(RedisConfig.SUBSCRIPTION_PREFIX + subscriptionDto.getUserId(), friends);
             }
         } else {
-            if (friends.contains(subscriptionDto.getFriendUsername())) {
-                friends.remove(subscriptionDto.getFriendUsername());
+            if (friends.contains(subscriptionDto.getFriendId())) {
+                friends.remove(subscriptionDto.getFriendId());
             }
         }
 
@@ -50,16 +50,16 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
             if (subscriptionDto.isSubscription()) {
                 try (final PreparedStatement insertSubscription = con.prepareStatement(
-                        "INSERT INTO SUBSCRIPTION (USERNAME, FRIEND_USERNAME) VALUES (?,?)", Statement.RETURN_GENERATED_KEYS)) {
-                    insertSubscription.setString(1, subscriptionDto.getUsername());
-                    insertSubscription.setString(2, subscriptionDto.getFriendUsername());
+                        "INSERT INTO SUBSCRIPTION (USER_ID, FRIEND_ID) VALUES (?,?)", Statement.RETURN_GENERATED_KEYS)) {
+                    insertSubscription.setLong(1, subscriptionDto.getUserId());
+                    insertSubscription.setLong(2, subscriptionDto.getFriendId());
                     insertSubscription.executeUpdate();
                 }
             } else {
                 try (final PreparedStatement deleteSubscription = con.prepareStatement(
-                        "DELETE FROM SUBSCRIPTION  WHERE USERNAME= ? AND FRIEND_USERNAME = ?")) {
-                    deleteSubscription.setString(1, subscriptionDto.getUsername());
-                    deleteSubscription.setString(2, subscriptionDto.getFriendUsername());
+                        "DELETE FROM SUBSCRIPTION  WHERE USER_ID= ? AND FRIEND_ID = ?")) {
+                    deleteSubscription.setLong(1, subscriptionDto.getUserId());
+                    deleteSubscription.setLong(2, subscriptionDto.getFriendId());
                     deleteSubscription.executeUpdate();
                 }
 

@@ -1,0 +1,129 @@
+version: '3.8'
+
+services:
+  cetus:
+    image: postgresai/cetus:latest
+    ports:
+      - "5433:5433"  # Cetus listens on port 5433
+    environment:
+      - NODE_ID=1
+      - LISTEN_PORT=5433
+      - PG_DATASOURCE=postgres://postgres:pass@master1:5432/postgres  # Connection to the master PostgreSQL
+    networks:
+      - pg-network
+    depends_on:
+      - master1
+      - slave1
+      - slave2
+
+  master1:
+    build:
+      context: .
+      dockerfile: ./pg/master1/Dockerfile
+    environment:
+      POSTGRES_PASSWORD: pass
+      POSTGRES_USER: postgres
+      POSTGRES_HOST_AUTH_METHOD: "scram-sha-256\n host replication all 0.0.0.0/0 trust \n "
+      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
+    ports:
+      - "5432:5432"
+    networks:
+      - pg-network
+    volumes:
+      - master1_data:/var/lib/postgresql/data
+      - ./00_init.sql:/docker-entrypoint-initdb.d/00_init.sql
+
+  slave1:
+    build:
+      context: .
+      dockerfile: ./pg/slave1/Dockerfile
+    environment:
+      POSTGRES_PASSWORD: pass
+      POSTGRES_USER: postgres
+      POSTGRES_HOST_AUTH_METHOD: "scram-sha-256\n host replication all 0.0.0.0/0 trust \n "
+    command: |
+      bash -c "
+      until pg_basebackup --pgdata=/var/lib/postgresql/data -R  --host=master1 --port=5432 --wal-method=stream
+      do
+      echo 'Waiting for primary to connect...'
+      sleep 1s
+      done
+      echo 'Backup done, starting replica...'
+      chmod 0700 /var/lib/postgresql/data
+      postgres
+      "
+    ports:
+      - "15432:5432"
+    networks:
+      - pg-network
+    volumes:
+      - slave1_data:/var/lib/postgresql/data
+    depends_on:
+      - master1
+
+  slave2:
+    build:
+      context: .
+      dockerfile: ./pg/slave2/Dockerfile
+    environment:
+      POSTGRES_PASSWORD: pass
+      POSTGRES_USER: postgres
+      POSTGRES_HOST_AUTH_METHOD: "scram-sha-256\n host replication all 0.0.0.0/0 trust \n "
+    command: |
+      bash -c "
+      until pg_basebackup --pgdata=/var/lib/postgresql/data -R  --host=master1 --port=5432 --wal-method=stream
+      do
+      echo 'Waiting for primary to connect...'
+      sleep 1s
+      done
+      echo 'Backup done, starting replica...'
+      chmod 0700 /var/lib/postgresql/data
+      postgres
+      "
+    ports:
+      - "25432:5432"
+    networks:
+      - pg-network
+    volumes:
+      - slave2_data:/var/lib/postgresql/data
+    depends_on:
+      - master1
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
+  redis:
+    image: redis
+    restart: always
+    environment:
+      REDIS_PASSWORD: redis
+    ports:
+      - 6379:6379
+    volumes:
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+
+  tarantool:
+    container_name: mytarantool
+    image: tarantool/tarantool:latest
+    environment:
+      TARANTOOL_USER_NAME: "admin"
+      TARANTOOL_USER_PASSWORD: "admin"
+    ports:
+      - 3301:3301
+
+networks:
+  pg-network:
+    driver: bridge
+
+volumes:
+#  master1_data:
+#  slave1_data:
+#  slave2_data:
+  rabbitmq_data:

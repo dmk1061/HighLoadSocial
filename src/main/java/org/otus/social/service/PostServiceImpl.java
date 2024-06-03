@@ -42,8 +42,8 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostDto> getFeed(final String username) {
-        final List<PostDto> friendsFeed = redisTemplate.opsForList().range(RedisConfig.FEED_PREFIX + username, 0, -1);
+    public List<PostDto> getFeed(final Long userId) {
+        final List<PostDto> friendsFeed = redisTemplate.opsForList().range(RedisConfig.FEED_PREFIX + userId, 0, -1);
         return friendsFeed;
     }
 

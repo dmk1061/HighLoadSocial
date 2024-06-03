@@ -27,9 +27,9 @@ public class HomeworkService {
     @Autowired
     @Qualifier("masterDataSource")
     private final DataSource masterDataSource;
-    @Autowired
+/*    @Autowired
     @Qualifier("slaveDataSource")
-    private final DataSource slaveDataSource;
+    private final DataSource slaveDataSource;*/
 
 
    // @Scheduled(fixedRate = 100000000L)
@@ -47,9 +47,9 @@ public class HomeworkService {
                 String[] comasplit = line.split(",");
                 String[] namesplit = comasplit[0].split(" ");
                 String insertAddress = String.format("INSERT INTO ADDRESS (city) VALUES  ('%s'); \n", comasplit[2]);
-                String insertUser = String.format("INSERT INTO USERS (name, surname, age, sex, address_id, login, password) VALUES " +
+                String insertUser = String.format("INSERT INTO USERS (name, surname, age, sex, address, username, password) VALUES " +
                                 "  ('%s', '%s', %d, 'M', 1, '%s', crypt('%s', gen_salt('bf', 10))); \n", namesplit[1], namesplit[0],
-                        Long.valueOf(comasplit[1]), "login" + a, "pass" + a + "; ");
+                        Long.valueOf(comasplit[1]), "username" + a, "pass" + a + "; ");
                 a = a + 1;
 
                 //    writer.write(insertAddress);
@@ -61,7 +61,7 @@ public class HomeworkService {
                 registerUserDto.setAge(Long.valueOf(comasplit[1]));
                 registerUserDto.setSex("m");
                 registerUserDto.setCity(comasplit[2]);
-                registerUserDto.setLogin("" + a);
+                registerUserDto.setUsername("" + a);
                 registerUserDto.setPassword("" + a++);
                 registerUserDto.setInterests(new ArrayList<>());
                 newUsers.add(registerUserDto);
@@ -91,8 +91,8 @@ public class HomeworkService {
                 }
                 id = id+1;
 
-                String userInsert = String.format("INSERT INTO USERS (id, name, surname, age, sex, address_id, login, password) VALUES (%d, '%s', '%s', %d, '%s', %d, '%s', '%s');\n",
-                        id,user.getName(), user.getSurname(), user.getAge(), user.getSex(), addressId.get(user.getCity()), user.getLogin(), user.getPassword());
+                String userInsert = String.format("INSERT INTO USERS (id, name, surname, age, sex, address, username, password) VALUES (%d, '%s', '%s', %d, '%s', %d, '%s', '%s');\n",
+                        id,user.getName(), user.getSurname(), user.getAge(), user.getSex(), addressId.get(user.getCity()), user.getUsername(), user.getPassword());
                 id = id+1;
                 log.info(""+id);
                 if(writeAdress){
@@ -112,9 +112,8 @@ public class HomeworkService {
         try (final Connection con = masterDataSource.getConnection()) {
             for (RegisterUserDto registerUserDto : list) {
 
-                Long addressId = userService.getAddressIdOrCreateIfNotExists(con, registerUserDto.getCity());
-                userId = userService.insertUserAndGetId(con, registerUserDto, addressId);
-                log.info("user registration finished {}", registerUserDto.getLogin());
+                userId = userService.insertUserAndGetId(con, registerUserDto, registerUserDto.getCity());
+                log.info("user registration finished {}", registerUserDto.getUsername());
                 //    insertUserInterests(con, userId, registerUserDto.getInterests());
             }
         }

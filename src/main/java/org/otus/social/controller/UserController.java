@@ -58,7 +58,8 @@ public class UserController {
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         final Object principal = authentication.getPrincipal();
         final String username = (principal instanceof UserDetails) ? ((UserDetails)principal).getUsername() : principal.toString();
-        subscriptionDto.setUsername(username);
+        final Long userId = userService.getByUserName(username).getId();
+        subscriptionDto.setUserId(userId);
         return  ResponseEntity.ok(subscriptionService.subscribe(subscriptionDto));
     }
 

@@ -6,9 +6,9 @@ import lombok.Data;
 @Data
 public class SubscriptionDto {
 
-     String username;
+     Long userId;
 
-     String friendUsername;
+     Long friendId;
 
      boolean subscription;
 

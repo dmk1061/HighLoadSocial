@@ -53,9 +53,7 @@ public class DialogServiceImpl implements DialogService {
         try (final Connection con = masterDataSource.getConnection()) {
             try (final PreparedStatement selectDialogs = con.prepareStatement(
                     """
-                            select u1.login, u2.login, body from dialog_message dml 
-                            left join users u1 on dml.from_user_id = u1.id
-                            left join users u2 on dml.to_user_id =u2.id   
+                            select from_user_id, to_user_id, body from dialog_message dml
                             where (from_user_id = ? and to_user_id =?) or (from_user_id=? and to_user_id=?) order by created;
                             """)) {
                 selectDialogs.setLong(1, from);

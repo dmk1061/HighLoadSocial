@@ -18,7 +18,7 @@ public class RegisterUserDto {
     private String sex;
     private String city;
     private List<String> interests;
-    private String login;
+    private String username;
     private String password;
 
 }

@@ -1,14 +1,14 @@
 CREATE TABLE POSTS  (
-                       id bigserial primary key,
-                       username varchar not null,
+                       id bigserial,
+                       user_id bigint not null,
                        body text not null,
                        created timestamp
 );
 
 CREATE TABLE SUBSCRIPTION (
                           id bigserial primary key,
-                          username varchar not null,
-                          friend_username varchar not null,
-                           UNIQUE(username, friend_username)
+                          user_id bigint not null,
+                          friend_id bigint not null,
+                          UNIQUE(user_id, friend_id)
 );
 

@@ -24,7 +24,7 @@ public class MyUserDetailService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(final String name) throws UsernameNotFoundException {
         final RegisterUserDto registerUserDto = userService.getByUserName(name);
-        return new User(registerUserDto.getLogin(), registerUserDto.getPassword(), new ArrayList<>()) {
+        return new User(registerUserDto.getUsername(), registerUserDto.getPassword(), new ArrayList<>()) {
         };
     }
 

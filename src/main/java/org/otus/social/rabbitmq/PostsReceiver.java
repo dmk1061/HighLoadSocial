@@ -30,7 +30,7 @@ public class PostsReceiver {
     public void receiveMessage(byte[] byteArray) throws JsonProcessingException {
         final String message = new String(byteArray, StandardCharsets.UTF_8); try {
             final PostDto postDto = objectMapper.readValue(message, PostDto.class);
-            final List<String> friends = redisFriendTemplate.opsForList().range(RedisConfig.SUBSCRIPTION_PREFIX + postDto.getUsername(), 0, -1);
+            final List<String> friends = redisFriendTemplate.opsForList().range(RedisConfig.SUBSCRIPTION_PREFIX + postDto.getUserId(), 0, -1);
             for (final String friendUsername : friends) {
                 redisPostTemplate.opsForList().rightPushAll(RedisConfig.FEED_PREFIX + friendUsername, postDto);
                 redisPostTemplate.opsForList().trim(RedisConfig.FEED_PREFIX + friendUsername, -1 * RedisConfig.FEED_LIMIT, -1);

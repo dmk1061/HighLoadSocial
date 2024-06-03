@@ -17,6 +17,6 @@ public interface UserService {
 
     UserDataDto getUserDataByUserId (Long id);
 
-     RegisterUserDto getByUserName (String login);
+     RegisterUserDto getByUserName (String username);
 
 }

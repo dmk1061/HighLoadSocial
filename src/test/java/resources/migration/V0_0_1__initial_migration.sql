@@ -1,11 +1,7 @@
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 
-CREATE TABLE ADDRESS  (
-                       id bigserial primary key,
-                       city varchar(50) unique
 
-);
 
 CREATE TABLE USERS(
                        id bigserial primary key ,
@@ -13,8 +9,8 @@ CREATE TABLE USERS(
                        surname varchar(30) not null,
                        age int not null,
                        sex varchar(1) not null,
-                       address_id bigint not null,
-                       login varchar  unique not null,
+                       address varchar not null,
+                       username varchar  unique not null,
                        password  varchar not null,
                        CONSTRAINT fk_address
                           FOREIGN KEY(address_id)

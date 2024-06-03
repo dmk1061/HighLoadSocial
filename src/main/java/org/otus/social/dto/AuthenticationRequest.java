@@ -8,7 +8,7 @@ import lombok.*;
 @NoArgsConstructor
 public class AuthenticationRequest {
 
-    private String login;
+    private String username;
 
 
     @ToString.Exclude

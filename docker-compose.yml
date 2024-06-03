@@ -1,91 +1,52 @@
 version: '3.8'
 
 services:
-  master1:
-    build:
-      context: .
-      dockerfile: ./pg/master1/Dockerfile
-    environment:
-      POSTGRES_PASSWORD: pass
-      POSTGRES_USER: postgres
-      POSTGRES_HOST_AUTH_METHOD: "scram-sha-256\n host replication all 192.168.80.2/0 trust \n "
-      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
-    command: |
+  master:
+    container_name: "citus_master"
+    image: "citusdata/citus:12.1.2"
     ports:
-      - "5432:5432"
-    networks:
-      - pg-network
-    volumes:
-      - master1_data:/var/lib/postgresql/data
-      - ./00_init.sql:/docker-entrypoint-initdb.d/00_init.sql
-  #   restart: unless-stopped
-  slave1:
-    build:
-      context: .
-      dockerfile: ./pg/slave1/Dockerfile
-    environment:
-      POSTGRES_PASSWORD: pass
+      - 5432:5432
+    labels: ["com.citusdata.role=Master"]
+    environment: &AUTH
+      POSTGRES_DB: postgres
       POSTGRES_USER: postgres
-      POSTGRES_HOST_AUTH_METHOD: "scram-sha-256\n host replication all 192.168.80.2/0 trust \n "
-    command: |
-      bash -c "
-      until pg_basebackup --pgdata=/var/lib/postgresql/data -R  --host=master1 --port=5432 --wal-method=stream
-      do
-      echo 'Waiting for primary to connect...'
-      sleep 1s
-      done
-      echo 'Backup done, starting replica...'
-      chmod 0700 /var/lib/postgresql/data
-      postgres
-      "
-    ports:
-      - "15432:5432"
-    networks:
-      - pg-network
+      POSTGRES_PASSWORD: postgres
+      PGUSER: postgres
+      PGPASSWORD: postgres
+      POSTGRES_HOST_AUTH_METHOD: trust
     volumes:
-      - slave1_data:/var/lib/postgresql/data
-    #     - ./postgresql.conf:/etc/postgresql/postgresql.conf # Mount the custom postgresql.conf file
- #   restart: unless-stopped
-#    depends_on:
-#      - master1
-  slave2:
-    build:
-      context: .
-      dockerfile: ./pg/slave2/Dockerfile
+      - pgdata-yellow:/var/lib/postgresql/data
+
+  citus_worker:
+    image: "citusdata/citus:12.1.2"
+    labels: ["com.citusdata.role=Worker"]
+    depends_on: [citus_manager]
+#    environment: *AUTH
+    command: "/wait-for-manager.sh"
     environment:
-      POSTGRES_PASSWORD: pass
-      POSTGRES_USER: postgres
-      POSTGRES_HOST_AUTH_METHOD: "scram-sha-256\n host replication all 192.168.80.2/0 trust \n "
-    command: |
-      bash -c "
-      until pg_basebackup --pgdata=/var/lib/postgresql/data -R  --host=master1 --port=5432 --wal-method=stream
-      do
-      echo 'Waiting for primary to connect...'
-      sleep 1s
-      done
-      echo 'Backup done, starting replica...'
-      chmod 0700 /var/lib/postgresql/data
-      postgres
-      "
-    ports:
-      - "25432:5432"
-    networks:
-      - pg-network
+      POSTGRES_HOST_AUTH_METHOD: trust
     volumes:
-      - slave2_data:/var/lib/postgresql/data
-    #     - ./postgresql.conf:/etc/postgresql/postgresql.conf # Mount the custom postgresql.conf file
-#    restart: unless-stopped
-#    depends_on:
-#      - master1
+      - pgdata-worker-yellow:/var/lib/postgresql/data
+      - healthcheck-volume:/healthcheck
+
+  citus_manager:
+    container_name: "citus_manager"
+    image: "citusdata/membership-manager:0.3.0"
+    volumes:
+      - "${DOCKER_SOCK:-/var/run/docker.sock}:/var/run/docker.sock"
+      - healthcheck-volume:/healthcheck
+    depends_on: [master]
+#    environment: *AUTH
 
   rabbitmq:
     image: rabbitmq:3-management
     container_name: rabbitmq
     ports:
-      - "5672:5672" # RabbitMQ main port
-      - "15672:15672" # RabbitMQ management UI
+      - "5672:5672"
+      - "15672:15672"
     volumes:
-      - rabbitmq_data:/var/lib/rabbitmq # Persist RabbitMQ data
+      - rabbitmq_data:/var/lib/rabbitmq
+
   redis:
     image: redis
     restart: always
@@ -96,6 +57,7 @@ services:
     volumes:
       - ./redis.conf:/usr/local/etc/redis/redis.conf
     command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+
   tarantool:
     container_name: mytarantool
     image: tarantool/tarantool:latest
@@ -104,11 +66,16 @@ services:
       TARANTOOL_USER_PASSWORD: "admin"
     ports:
       - 3301:3301
+
 networks:
   pg-network:
     driver: bridge
+
 volumes:
-  master1_data:
-  slave1_data:
-  slave2_data:
+  pgdata-yellow:
+  pgdata-worker-yellow:
+  healthcheck-volume:
+#  master1_data:
+#  slave1_data:
+#  slave2_data:
   rabbitmq_data:

@@ -22,24 +22,24 @@ import java.util.List;
 public class WarmUpServiceImpl implements WarmUpService {
 
     @Autowired
-    @Qualifier("slaveDataSource")
-    private final DataSource slaveDataSource;
+    @Qualifier("masterDataSource")
+    private final DataSource masterDataSource;
     @Qualifier("friendRedisTemplate")
     private  final RedisTemplate redisTemplate;
     @Qualifier("posts")
     private final RedisTemplate<String, PostDto> redisPostTemplate;
     @Override
     public Boolean feedWarmUp() {
-        try (final Connection con = slaveDataSource.getConnection()) {
-            final List<String> usernames = getUserUsernames(con);
-            for (String username : usernames){
-                final List<String> friendUsernames = getFriendUsernames(con, username);
+        try (final Connection con = masterDataSource.getConnection()) {
+            final List<Long> userIds = getUserUsernames(con);
+            for (Long userId : userIds){
+                final List<String> friendUsernames = getFriendUsernames(con, userId);
                 if(friendUsernames.size()>0) {
-                    redisTemplate.delete(RedisConfig.SUBSCRIPTION_PREFIX + username);
-                    redisTemplate.opsForList().rightPushAll(RedisConfig.SUBSCRIPTION_PREFIX + username, friendUsernames);
-                    List<PostDto> posts = getLastPostsFeed(con, username);
-                    redisPostTemplate.delete(RedisConfig.FEED_PREFIX + username);
-                    redisPostTemplate.opsForList().rightPushAll(RedisConfig.FEED_PREFIX + username, posts);
+                    redisTemplate.delete(RedisConfig.SUBSCRIPTION_PREFIX + userId);
+                    redisTemplate.opsForList().rightPushAll(RedisConfig.SUBSCRIPTION_PREFIX + userId, friendUsernames);
+                    List<PostDto> posts = getLastPostsFeed(con, userId);
+                    redisPostTemplate.delete(RedisConfig.FEED_PREFIX + userId);
+                    redisPostTemplate.opsForList().rightPushAll(RedisConfig.FEED_PREFIX + userId, posts);
                 }
 
             }
@@ -49,26 +49,26 @@ public class WarmUpServiceImpl implements WarmUpService {
         }
         return true;
     }
-    private List<PostDto> getLastPostsFeed(final Connection con,  final String user) throws SQLException {
+    private List<PostDto> getLastPostsFeed(final Connection con,  final Long userId) throws SQLException {
         final List<PostDto> posts = new ArrayList<>();
         try (final PreparedStatement selectPosts = con.prepareStatement(
-                "SELECT p.id, p.username, p.body, p.created\n" +
+                "SELECT p.id, p.user_id, p.body, p.created\n" +
                         "FROM POSTS p\n" +
-                        "INNER JOIN SUBSCRIPTION s ON p.username = s.friend_username\n" +
-                        "WHERE s.username = ?\n" +
+                        "INNER JOIN SUBSCRIPTION s ON p.user_id = s.friend_id\n" +
+                        "WHERE s.user_id = ?\n" +
                         "ORDER BY p.created DESC\n" +
                         "LIMIT ?;")) {
-            selectPosts.setString(1, user);
+            selectPosts.setLong(1, userId);
             selectPosts.setLong(2, RedisConfig.FEED_LIMIT);
             try (final ResultSet selectedUsers = selectPosts.executeQuery()) {
                 while (selectedUsers.next()) {
                     PostDto postDto = new PostDto();
-                    String username = selectedUsers.getString("username");
+                //    Long userId = selectedUsers.getLong("user_id");
                     String body = selectedUsers.getString("body");
                     String time = selectedUsers.getString("created");
                  //   LocalDateTime created = LocalDateTime.parse(time);
                    // postDto.setCreated(created);
-                    postDto.setUsername(username);
+                    postDto.setUserId(userId);
                     postDto.setBody(body);
                     posts.add(postDto);
                 }
@@ -77,28 +77,28 @@ public class WarmUpServiceImpl implements WarmUpService {
         return posts;
     }
 
-    private List<String> getUserUsernames(final Connection con) throws SQLException {
-        final List<String> userUsernames = new ArrayList<>();
+    private List<Long> getUserUsernames(final Connection con) throws SQLException {
+        final List<Long> userIds = new ArrayList<>();
         try (final PreparedStatement selectUsers = con.prepareStatement(
-                "SELECT LOGIN FROM USERS;")) {
+                "SELECT ID FROM USERS;")) {
             try (final ResultSet selectedUsers = selectUsers.executeQuery()) {
                 while (selectedUsers.next()) {
-                    String username = selectedUsers.getString("login");
-                    userUsernames.add(username);
+                    Long userId = selectedUsers.getLong("id");
+                    userIds.add(userId);
                 }
             }
         }
-        return userUsernames;
+        return userIds;
     }
 
-    private List<String> getFriendUsernames(final Connection con, final String username) throws SQLException {
+    private List<String> getFriendUsernames(final Connection con, final Long userId) throws SQLException {
         final List<String> friendUsernames = new ArrayList<>();
         try (final PreparedStatement selectFriends = con.prepareStatement(
-                "SELECT U.LOGIN FROM SUBSCRIPTION S LEFT JOIN USERS U ON S.FRIEND_USERNAME = U.LOGIN WHERE S.USERNAME = ?;")) {
-            selectFriends.setString(1, username);
+                "SELECT U.USERNAME FROM SUBSCRIPTION S LEFT JOIN USERS U ON S.FRIEND_ID = U.ID WHERE S.USER_ID = ?;")) {
+            selectFriends.setLong(1, userId);
             try (final ResultSet selectedUsers = selectFriends.executeQuery()) {
                 while (selectedUsers.next()) {
-                    String friendUsername = selectedUsers.getString("login");
+                    String friendUsername = selectedUsers.getString("username");
                     friendUsernames.add(friendUsername);
                 }
             }

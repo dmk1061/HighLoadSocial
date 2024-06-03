@@ -13,7 +13,7 @@ public class PostDto implements Serializable {
 
     String body;
     //TODO change flow on userID
-    String username;
+    Long userId;
 
     LocalDateTime created;
 

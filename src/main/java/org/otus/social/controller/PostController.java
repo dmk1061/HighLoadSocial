@@ -3,6 +3,7 @@ package org.otus.social.controller;
 import lombok.AllArgsConstructor;
 import org.otus.social.dto.PostDto;
 import org.otus.social.service.PostService;
+import org.otus.social.service.UserService;
 import org.otus.social.service.WarmUpService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -22,12 +23,12 @@ import java.util.List;
 public class PostController {
 
     private final PostService postService;
-
+    private  final UserService userService;
     private final WarmUpService warmUpService;
 
     @PostMapping("/publish")
     public ResponseEntity<Boolean> publish(@RequestBody final PostDto postDto)  {
-        postDto.setUsername(getCurrentUserName());
+        postDto.setUserId(getCurrentUserId());
         postDto.setCreated(LocalDateTime.now());
         return ResponseEntity.ok(postService.publish(postDto));
     }
@@ -39,19 +40,21 @@ public class PostController {
 
     @GetMapping("/feed")
     public ResponseEntity<List<PostDto>> getFriendsFeed() {
-        return ResponseEntity.ok(postService.getFeed(getCurrentUserName()));
+        return ResponseEntity.ok(postService.getFeed(getCurrentUserId()));
     }
 
-    public String getCurrentUserName() {
+    public Long getCurrentUserId() {
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         final Object principal = authentication.getPrincipal();
-        return (principal instanceof UserDetails) ? ((UserDetails) principal).getUsername() : principal.toString();
+        final String username = (principal instanceof UserDetails) ? ((UserDetails)principal).getUsername() : principal.toString();
+        final Long userId = userService.getByUserName(username).getId();
+        return userId;
     }
     @MessageMapping("/hello")
     @SendTo("/topic/greetings/john_doe")
     public PostDto greeting(PostDto message) throws Exception {
         Thread.sleep(1000); // simulated delay
-        return new PostDto("Hello, " + HtmlUtils.htmlEscape(message.getUsername()) + "!", "", LocalDateTime.now());
+        return new PostDto("Hello, " + HtmlUtils.htmlEscape(""+message.getUserId()) + "!", message.getUserId(), LocalDateTime.now());
     }
 
 

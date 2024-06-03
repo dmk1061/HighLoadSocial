@@ -47,7 +47,7 @@ public class UserServiceImplTest extends AbstractContainerBaseTest{
       final String name = "test_user_name";
       final String surname = "test_user_sur`name";
       RegisterUserDto registerUserDto = new RegisterUserDto();
-      registerUserDto.setLogin("testuser");
+      registerUserDto.setUsername("testuser");
       registerUserDto.setPassword("123456");
       registerUserDto.setCity("London");
       registerUserDto.setAge(30L);

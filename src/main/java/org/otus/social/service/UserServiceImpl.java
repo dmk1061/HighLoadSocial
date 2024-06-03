@@ -38,9 +38,7 @@ public class UserServiceImpl implements UserService {
     @Autowired
     @Qualifier("masterDataSource")
     private final DataSource masterDataSource;
-    @Autowired
-    @Qualifier("slaveDataSource")
-    private final DataSource slaveDataSource;
+
     PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     private final TarantoolClient client;
@@ -49,65 +47,35 @@ public class UserServiceImpl implements UserService {
 
 
     public DataSource getDataSource (boolean master){
-        if(master){
             return masterDataSource;
-        }else {
-            return slaveDataSource;
-        }
     }
 
     @Transactional
     @Override
     public Long registerUser(final RegisterUserDto registerUserDto) throws SQLException {
-        log.info("user registration started {}", registerUserDto.getLogin());
+        log.info("user registration started {}", registerUserDto.getUsername());
         Long userId = null;
         try (final Connection con = masterDataSource.getConnection()) {
-            Long addressId = getAddressIdOrCreateIfNotExists(con, registerUserDto.getCity());
-            userId = insertUserAndGetId(con, registerUserDto, addressId);
-            insertUserInterests(con, userId, registerUserDto.getInterests());
+            String address = registerUserDto.getCity();
+            userId = insertUserAndGetId(con, registerUserDto, registerUserDto.getCity());
+            if(registerUserDto.getInterests()!= null && !registerUserDto.getInterests().isEmpty()){
+                insertUserInterests(con, userId, registerUserDto.getInterests());
+            }
         }
         return userId;
     }
 
-    public Long getAddressIdOrCreateIfNotExists(Connection con, String city) throws SQLException {
-        try (final PreparedStatement selectAddress = con.prepareStatement(
-                "SELECT ID FROM ADDRESS WHERE CITY =?;")) {
-            selectAddress.setString(1, city);
-            try (final ResultSet selectedAddresses = selectAddress.executeQuery()) {
-                if (selectedAddresses.next()) {
-                    return selectedAddresses.getLong(1);
-                } else {
-                    return insertAddressAndGetId(con, city);
-                }
-            }
-        }
-    }
-
-    private Long insertAddressAndGetId(Connection con, String city) throws SQLException {
-        try (final PreparedStatement insertAdress = con.prepareStatement(
-                "INSERT INTO ADDRESS (CITY) VALUES (?)", Statement.RETURN_GENERATED_KEYS)) {
-            insertAdress.setString(1, city);
-            insertAdress.executeUpdate();
-            try (final ResultSet generatedKeys = insertAdress.getGeneratedKeys()) {
-                if (generatedKeys.next()) {
-                    return generatedKeys.getLong(1);
-                }
-            }
-        }
-        return null;
-    }
-
-    public Long insertUserAndGetId(Connection con, RegisterUserDto registerUserDto, Long addressId) throws SQLException {
+    public Long insertUserAndGetId(Connection con, RegisterUserDto registerUserDto, String address) throws SQLException {
         Long userId = null;
         try (final PreparedStatement insertUser = con.prepareStatement(
-                "INSERT INTO USERS (name, surname, age, sex, address_id, login, password) values (?,?,?,?,?,?,?);",
+                "INSERT INTO USERS (name, surname, age, sex, address, username, password) values (?,?,?,?,?,?,?);",
                 Statement.RETURN_GENERATED_KEYS)) {
             insertUser.setString(1, registerUserDto.getName());
             insertUser.setString(2, registerUserDto.getSurname());
             insertUser.setLong(3, registerUserDto.getAge());
             insertUser.setString(4, registerUserDto.getSex());
-            insertUser.setLong(5, addressId);
-            insertUser.setString(6, registerUserDto.getLogin());
+            insertUser.setString(5, address);
+            insertUser.setString(6, registerUserDto.getUsername());
             insertUser.setString(7, passwordEncoder.encode(registerUserDto.getPassword()));
             insertUser.executeUpdate();
 
@@ -156,9 +124,9 @@ public class UserServiceImpl implements UserService {
         log.info("search");
         List<UserDataDto> list = new ArrayList<>();
 
-        try (final Connection con = slaveDataSource.getConnection()) {
+        try (final Connection con = masterDataSource.getConnection()) {
             final PreparedStatement selectUsers = con.prepareStatement(
-                    "SELECT * FROM USERS U LEFT JOIN ADDRESS A ON U.ADDRESS_ID = A.ID WHERE U.NAME LIKE ? and U.SURNAME LIKE ? ORDER BY U.ID;"
+                    "SELECT * FROM USERS U WHERE U.NAME LIKE ? and U.SURNAME LIKE ? ORDER BY U.ID;"
 
             );
             selectUsers.setString(1, "%"+searchRequestDto.getFirstName() + "%");
@@ -170,7 +138,7 @@ public class UserServiceImpl implements UserService {
                     userDataDto.setSurname(selectedUsers.getString(3));
                     userDataDto.setAge(selectedUsers.getLong(4));
                     userDataDto.setSex(selectedUsers.getString(5));
-                    userDataDto.setCity(selectedUsers.getString(10));
+                    userDataDto.setCity(selectedUsers.getString(6));
                     userDataDto.setInterests(new ArrayList<String>());
                     list.add(userDataDto);
                 }
@@ -209,9 +177,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDataDto getUserDataByUserId(final Long userId) {
         final UserDataDto userDataDto = new UserDataDto();
-        try (final Connection con = slaveDataSource.getConnection()) {
+        try (final Connection con = masterDataSource.getConnection()) {
             final PreparedStatement selectUser = con.prepareStatement(
-                    "SELECT * FROM USERS U LEFT JOIN ADDRESS A ON U.ADDRESS_ID = A.ID WHERE U.ID = ?;"
+                    "SELECT * FROM USERS U  WHERE U.ID = ?;"
             );
             selectUser.setLong(1, userId);
             try (final ResultSet selectedUsers = selectUser.executeQuery();) {
@@ -220,7 +188,7 @@ public class UserServiceImpl implements UserService {
                 userDataDto.setSurname(selectedUsers.getString(3));
                 userDataDto.setAge(selectedUsers.getLong(4));
                 userDataDto.setSex(selectedUsers.getString(5));
-                userDataDto.setCity(selectedUsers.getString(10));
+                userDataDto.setCity(selectedUsers.getString(6));
                 userDataDto.setInterests(new ArrayList<String>());
             }
 //            final PreparedStatement selectInterests = con.prepareStatement(
@@ -240,13 +208,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public RegisterUserDto getByUserName(final String login) {
+    public RegisterUserDto getByUserName(final String username) {
         final RegisterUserDto registerUserDto = new RegisterUserDto();
         try (final Connection con = masterDataSource.getConnection()) {
             final PreparedStatement selectUser = con.prepareStatement(
-                    "SELECT * FROM USERS U LEFT JOIN ADDRESS A ON U.ADDRESS_ID = A.ID WHERE U.LOGIN = ?;"
+                    "SELECT * FROM USERS U  WHERE U.USERNAME = ?;"
             );
-            selectUser.setString(1, login);
+            selectUser.setString(1, username);
             try (final ResultSet rs = selectUser.executeQuery();) {
                 rs.next();
                 registerUserDto.setId(rs.getLong(1));
@@ -254,9 +222,9 @@ public class UserServiceImpl implements UserService {
                 registerUserDto.setSurname(rs.getString(3));
                 registerUserDto.setAge(rs.getLong(4));
                 registerUserDto.setSex(rs.getString(5));
-                registerUserDto.setLogin(rs.getString(7));
+                registerUserDto.setUsername(rs.getString(7));
                 registerUserDto.setPassword(rs.getString(8));
-                registerUserDto.setCity(rs.getString(10));
+                registerUserDto.setCity(rs.getString(6));
                 registerUserDto.setInterests(new ArrayList<>());
             }
 

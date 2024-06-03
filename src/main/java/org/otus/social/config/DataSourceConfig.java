@@ -20,7 +20,7 @@ public class DataSourceConfig {
 
     @Value("${spring.datasource.master.password}")
     private String masterDbPassword;
-
+/*
     @Value("${spring.datasource.slave.url}")
     private String slaveDbUrl;
 
@@ -28,7 +28,7 @@ public class DataSourceConfig {
     private String slaveDbUserName;
 
     @Value("${spring.datasource.slave.password}")
-    private String slaveDbPassword;
+    private String slaveDbPassword;*/
 
 
     @Primary
@@ -42,13 +42,13 @@ public class DataSourceConfig {
         return new HikariDataSource(masterConfig);
     }
 
-    @Bean(name = "slaveDataSource")
-    public DataSource slaveDataSource() {
-        HikariConfig slaveConfig = new HikariConfig();
-        slaveConfig.setPoolName(DataSourceConfig.class.getName() + "_slave");
-        slaveConfig.setJdbcUrl(slaveDbUrl);
-        slaveConfig.setUsername(slaveDbUserName);
-        slaveConfig.setPassword(slaveDbPassword);
-        return new HikariDataSource(slaveConfig);
-    }
+//    @Bean(name = "slaveDataSource")
+//    public DataSource slaveDataSource() {
+//        HikariConfig slaveConfig = new HikariConfig();
+//        slaveConfig.setPoolName(DataSourceConfig.class.getName() + "_slave");
+//        slaveConfig.setJdbcUrl(slaveDbUrl);
+//        slaveConfig.setUsername(slaveDbUserName);
+//        slaveConfig.setPassword(slaveDbPassword);
+//        return new HikariDataSource(slaveConfig);
+//    }
 }

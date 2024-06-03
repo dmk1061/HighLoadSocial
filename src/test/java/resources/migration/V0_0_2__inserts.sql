@@ -5,7 +5,7 @@ INSERT INTO ADDRESS (city) VALUES
   ('Paris'),
   ('Tokyo');
 
-INSERT INTO USERS (name, surname, age, sex, address_id, login, password) VALUES
+INSERT INTO USERS (name, surname, age, sex, address, username, password) VALUES
   ('John', 'Doe', 25, 'M', 1, 'john_doe', crypt('hashed_password_1', gen_salt('bf', 10))),
   ('Alice', 'Smith', 30, 'F', 2, 'alice_smith', crypt('hashed_password_2', gen_salt('bf', 10))),
   ('Bob', 'Johnson', 22, 'M', 3, 'bob_johnson', crypt('hashed_password_3', gen_salt('bf', 10))),

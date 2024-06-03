@@ -8,5 +8,5 @@ public interface PostService {
 
      Boolean publish (PostDto postDto) ;
 
-     List<PostDto> getFeed(String username);
+     List<PostDto> getFeed(Long userId);
 }
