@@ -7,9 +7,6 @@ CREATE TABLE DIALOG_MESSAGE  (
                        CONSTRAINT fk_from_user
                            FOREIGN KEY(from_user_id)
                                REFERENCES USERS(id)
---                        CONSTRAINT fk_to_user
---                            FOREIGN KEY(to_user_id)
---                                REFERENCES USERS(id)
 );
 INSERT INTO DIALOG_MESSAGE (from_user_id, to_user_id, body, created) VALUES
 (1, 2, 'Hey there! How are you?', NOW()),

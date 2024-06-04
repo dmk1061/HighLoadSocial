@@ -20,7 +20,7 @@ INSERT INTO USERS (name, surname, age, sex, address, username, password) VALUES
   ('Alexander', 'Harris', 28, 'M', 'Stockholm', 'alexander_harris', crypt('hashed_password_19', gen_salt('bf', 10))),
   ('Amelia', 'Ramirez', 26, 'F', 'Athens', 'amelia_ramirez', crypt('hashed_password_20', gen_salt('bf', 10)));
 
--- Добавление данных в таблицу INTEREST
+
 INSERT INTO INTEREST (interest_name) VALUES
   ('Sports'),
   ('Music'),

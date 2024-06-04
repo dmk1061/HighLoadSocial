@@ -27,7 +27,7 @@ public class PostsReceiver {
     private final ObjectMapper objectMapper;
     private final CountDownLatch latch = new CountDownLatch(1);
     private final SimpMessagingTemplate simpMessagingTemplate;
-    public void receiveMessage(byte[] byteArray) throws JsonProcessingException {
+    public void receiveMessage(final byte[] byteArray) throws JsonProcessingException {
         final String message = new String(byteArray, StandardCharsets.UTF_8); try {
             final PostDto postDto = objectMapper.readValue(message, PostDto.class);
             final List<String> friends = redisFriendTemplate.opsForList().range(RedisConfig.SUBSCRIPTION_PREFIX + postDto.getUserId(), 0, -1);

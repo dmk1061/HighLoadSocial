@@ -1,7 +1,9 @@
 package org.otus.social.controller;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.otus.social.dto.UserDataDto;
+import org.otus.social.service.SubscriptionService;
 import org.otus.social.service.UserService;
 import org.otus.social.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,16 +30,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class UserControllerTest {
     @MockBean
     UserService userService;
+    @InjectMocks
+    SubscriptionService subscriptionService;
+
     @Autowired
     private MockMvc mockMvc;
     @WithMockUser(username="user1@mail.ru")
     @Test
     public void getUserFormById() throws Exception {
-        List<String> interests = new ArrayList<>();
+        final List<String> interests = new ArrayList<>();
         final UserDataDto userDataDto = new UserDataDto("name", "surname",50L, "M", "MOSCOW", interests);
         given(userService.getUserDataByUserId(1L)).willReturn(userDataDto);
         final ResultActions response = mockMvc.perform(myFactoryRequest("/user/get/1"));
-
         response.andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(jsonPath("$.interests.size()",

@@ -41,7 +41,6 @@ public class WarmUpServiceImpl implements WarmUpService {
                     redisPostTemplate.delete(RedisConfig.FEED_PREFIX + userId);
                     redisPostTemplate.opsForList().rightPushAll(RedisConfig.FEED_PREFIX + userId, posts);
                 }
-
             }
         } catch (Exception e) {
             log.error("Error during warmup");

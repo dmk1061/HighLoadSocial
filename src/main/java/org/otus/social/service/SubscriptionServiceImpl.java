@@ -45,8 +45,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         return subscriptionDto.isSubscription();
     }
 
-    public void persistSubscription(SubscriptionDto subscriptionDto) {
-        try (Connection con = masterDataSource.getConnection()) {
+    public void persistSubscription(final SubscriptionDto subscriptionDto) {
+        try (final Connection con = masterDataSource.getConnection()) {
 
             if (subscriptionDto.isSubscription()) {
                 try (final PreparedStatement insertSubscription = con.prepareStatement(
@@ -62,11 +62,9 @@ public class SubscriptionServiceImpl implements SubscriptionService {
                     deleteSubscription.setLong(2, subscriptionDto.getFriendId());
                     deleteSubscription.executeUpdate();
                 }
-
             }
         }catch(Exception e){
                 log.error("Error during subscription persistence");
             }
         }
-
     }

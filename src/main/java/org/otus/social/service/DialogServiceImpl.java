@@ -22,15 +22,14 @@ public class DialogServiceImpl implements DialogService {
     @Autowired
     @Qualifier("masterDataSource")
     private final DataSource masterDataSource;
-
     private final MyUserDetailService userDetailService;
     private final UserService userService;
 
 
     @Override
-    public Boolean sent(DialogMessageDto dialogMessageDto) {
-        Long from = userDetailService.loadUserDataByUsername(dialogMessageDto.getFromUser()).getId();
-        Long to = userDetailService.loadUserDataByUsername(dialogMessageDto.getToUser()).getId();
+    public Boolean sent(final DialogMessageDto dialogMessageDto) {
+        final Long from = userDetailService.loadUserDataByUsername(dialogMessageDto.getFromUser()).getId();
+        final Long to = userDetailService.loadUserDataByUsername(dialogMessageDto.getToUser()).getId();
         try (final Connection con = masterDataSource.getConnection()) {
             try (final PreparedStatement insertAdress = con.prepareStatement(
                     "INSERT INTO DIALOG_MESSAGE (from_user_id, to_user_id, body, created) VALUES (?,?,?, now())", Statement.RETURN_GENERATED_KEYS)) {
@@ -47,8 +46,8 @@ public class DialogServiceImpl implements DialogService {
     }
 
     @Override
-    public List<DialogMessageDto> getDialog(String username, Long to) {
-        Long from = userDetailService.loadUserDataByUsername(username).getId();
+    public List<DialogMessageDto> getDialog(final String username, final Long to) {
+        final Long from = userDetailService.loadUserDataByUsername(username).getId();
         final List<DialogMessageDto> dialog = new ArrayList<>();
         try (final Connection con = masterDataSource.getConnection()) {
             try (final PreparedStatement selectDialogs = con.prepareStatement(
@@ -67,7 +66,6 @@ public class DialogServiceImpl implements DialogService {
                         dialogMessageDto.setFromUser(selectedMessages.getString(1));
                         dialogMessageDto.setToUser(selectedMessages.getString(2));
                         dialogMessageDto.setBody(selectedMessages.getString(3));
-
                         dialog.add(dialogMessageDto);
                     }
                 }

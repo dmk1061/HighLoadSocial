@@ -27,35 +27,30 @@ public class HomeworkService {
     @Autowired
     @Qualifier("masterDataSource")
     private final DataSource masterDataSource;
-/*    @Autowired
-    @Qualifier("slaveDataSource")
-    private final DataSource slaveDataSource;*/
-
 
    // @Scheduled(fixedRate = 100000000L)
     public void test() throws IOException {
-        List<List<String>> records = new ArrayList<>();
-        String fileName = "1.txt";
-        ClassLoader classLoader = SocialNetwork.class.getClassLoader();
-        InputStream inputStream = classLoader.getResourceAsStream(fileName);
-        List<RegisterUserDto> newUsers = new ArrayList<>();
+        final List<List<String>> records = new ArrayList<>();
+        final String fileName = "1.txt";
+        final ClassLoader classLoader = SocialNetwork.class.getClassLoader();
+        final InputStream inputStream = classLoader.getResourceAsStream(fileName);
+        final List<RegisterUserDto> newUsers = new ArrayList<>();
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream)); BufferedWriter writer = new BufferedWriter(new FileWriter("V0_0_3__insert_test_index.sql"));) {
             int a = 1700000;
             String line;
             while ((line = reader.readLine()) != null) {
-                String[] comasplit = line.split(",");
-                String[] namesplit = comasplit[0].split(" ");
-                String insertAddress = String.format("INSERT INTO ADDRESS (city) VALUES  ('%s'); \n", comasplit[2]);
-                String insertUser = String.format("INSERT INTO USERS (name, surname, age, sex, address, username, password) VALUES " +
+                final String[] comasplit = line.split(",");
+                final String[] namesplit = comasplit[0].split(" ");
+                final String insertAddress = String.format("INSERT INTO ADDRESS (city) VALUES  ('%s'); \n", comasplit[2]);
+                final String insertUser = String.format("INSERT INTO USERS (name, surname, age, sex, address, username, password) VALUES " +
                                 "  ('%s', '%s', %d, 'M', 1, '%s', crypt('%s', gen_salt('bf', 10))); \n", namesplit[1], namesplit[0],
                         Long.valueOf(comasplit[1]), "username" + a, "pass" + a + "; ");
                 a = a + 1;
 
-                //    writer.write(insertAddress);
                 //        writer.write(insertUser);
                 int ad = 0;
-                RegisterUserDto registerUserDto = new RegisterUserDto();
+                final RegisterUserDto registerUserDto = new RegisterUserDto();
                 registerUserDto.setSurname(namesplit[0]);
                 registerUserDto.setName(namesplit[1]);
                 registerUserDto.setAge(Long.valueOf(comasplit[1]));
@@ -80,18 +75,18 @@ public class HomeworkService {
 
 
     public void writeToSQLFile(List<RegisterUserDto> userList) {
-        HashMap<String, Integer > addressId = new HashMap<>();
+        final HashMap<String, Integer > addressId = new HashMap<>();
         int id = 16;
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("2.sql"))) {
             for (RegisterUserDto user : userList) {
-                String addressInsert = String.format("INSERT INTO ADDRESS (id, city) VALUES (%d, '%s');\n", id, user.getCity());
-                boolean writeAdress = addressId.get(user.getCity())== null;
+                final String addressInsert = String.format("INSERT INTO ADDRESS (id, city) VALUES (%d, '%s');\n", id, user.getCity());
+                final boolean writeAdress = addressId.get(user.getCity())== null;
                 if(writeAdress) {
                     addressId.put(user.getCity(), id);
                 }
                 id = id+1;
 
-                String userInsert = String.format("INSERT INTO USERS (id, name, surname, age, sex, address, username, password) VALUES (%d, '%s', '%s', %d, '%s', %d, '%s', '%s');\n",
+                final String userInsert = String.format("INSERT INTO USERS (id, name, surname, age, sex, address, username, password) VALUES (%d, '%s', '%s', %d, '%s', %d, '%s', '%s');\n",
                         id,user.getName(), user.getSurname(), user.getAge(), user.getSex(), addressId.get(user.getCity()), user.getUsername(), user.getPassword());
                 id = id+1;
                 log.info(""+id);

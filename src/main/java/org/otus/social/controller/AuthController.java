@@ -1,6 +1,5 @@
 package org.otus.social.controller;
 
-
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.otus.social.dto.AuthenticationRequest;
@@ -29,7 +28,7 @@ public class AuthController {
     private final MyUserDetailService userDetailsService;
     private final JwtUtil jwtUtil;
     @PostMapping("/getToken")
-    public ResponseEntity getToken(@RequestBody  AuthenticationRequest authenticationRequest) {
+    public ResponseEntity getToken(@RequestBody final AuthenticationRequest authenticationRequest) {
         log.info("token request received " + authenticationRequest);
         final RegisterUserDto user;
         if (authenticationRequest.getUsername() != null) {

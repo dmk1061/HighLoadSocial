@@ -13,7 +13,6 @@ import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
-import java.util.concurrent.CountDownLatch;
 
 @Component
 @RequiredArgsConstructor
@@ -25,14 +24,11 @@ public class PostsPersist {
     @Qualifier("masterDataSource")
     private final DataSource masterDataSource;
 
-  //  private CountDownLatch latch = new CountDownLatch(1);
-
-    public void receiveMessage(byte[] byteArray) throws JsonProcessingException {
-        String message = new String(byteArray, StandardCharsets.UTF_8); try {
+    public void receiveMessage(final byte[] byteArray) throws JsonProcessingException {
+        final String message = new String(byteArray, StandardCharsets.UTF_8); try {
         final PostDto postDto = objectMapper.readValue(message, PostDto.class);
         persistPost(postDto);
         log.info("Received <" + message + ">");
- //       latch.countDown();
         }catch (Exception e){
             log.error("PostReceiver error " + e.getMessage());
         }
@@ -49,7 +45,5 @@ public class PostsPersist {
             log.error("Error during subscription persistence");
         }
     }
-//    public CountDownLatch getLatch() {
-//        return latch;
-//    }
+
 }

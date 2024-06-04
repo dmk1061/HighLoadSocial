@@ -20,7 +20,7 @@ public class TarantoolConfig  {
 
     @Bean
     public TarantoolClient tarantoolClient(){
-        TarantoolClient tarantoolClient = TarantoolClientFactory.createClient()
+        final TarantoolClient tarantoolClient = TarantoolClientFactory.createClient()
                 .withAddress(host, port)
   //              .withCredentials(username, password)
                 .build();

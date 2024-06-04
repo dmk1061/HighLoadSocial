@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 public class DialogMessageDto implements Serializable {
 
     String body;
-    //TODO change flow on userID
+
     String fromUser;
 
     String toUser;

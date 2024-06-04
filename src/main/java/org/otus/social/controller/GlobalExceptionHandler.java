@@ -15,7 +15,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler (Exception.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<String> handleNoSuchElementFoundException(
+    public ResponseEntity<String> handleException(
             final Exception exception
     ) {
         log.error("Otus exception " + exception.getMessage());

@@ -12,8 +12,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericToStringSerializer;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 
-import java.util.List;
-
 @Configuration
 public class RedisConfig {
     public static final String FEED_PREFIX = "feed";

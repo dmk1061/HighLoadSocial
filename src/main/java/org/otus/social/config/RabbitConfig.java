@@ -1,6 +1,5 @@
 package org.otus.social.config;
 
-
 import org.otus.social.rabbitmq.PostsPersist;
 import org.otus.social.rabbitmq.PostsReceiver;
 import org.springframework.context.annotation.Bean;

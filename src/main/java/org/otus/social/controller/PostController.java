@@ -13,7 +13,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.util.HtmlUtils;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -52,7 +51,7 @@ public class PostController {
     }
     @MessageMapping("/hello")
     @SendTo("/topic/greetings/john_doe")
-    public PostDto greeting(PostDto message) throws Exception {
+    public PostDto greeting(final PostDto message) throws Exception {
         Thread.sleep(1000); // simulated delay
         return new PostDto("Hello, " + HtmlUtils.htmlEscape(""+message.getUserId()) + "!", message.getUserId(), LocalDateTime.now());
     }

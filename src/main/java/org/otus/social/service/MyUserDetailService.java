@@ -10,7 +10,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
-import java.util.logging.Logger;
 
 @Primary
 @AllArgsConstructor
@@ -19,7 +18,6 @@ import java.util.logging.Logger;
 public class MyUserDetailService implements UserDetailsService {
 
     private  final UserService userService;
-
 
     @Override
     public UserDetails loadUserByUsername(final String name) throws UsernameNotFoundException {
@@ -32,5 +30,4 @@ public class MyUserDetailService implements UserDetailsService {
         return userService.getByUserName(name);
 
     }
-
 }
