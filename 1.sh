@@ -11,3 +11,5 @@ for volume in $volumes; do
         docker volume rm $volume
     fi
 done
+
+##
