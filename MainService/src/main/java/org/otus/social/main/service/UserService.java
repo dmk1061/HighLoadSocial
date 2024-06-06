@@ -1,8 +1,10 @@
-package org.otus.social.service;
+package org.otus.social.main.service;
 
-import org.otus.social.dto.SearchRequestDto;
-import org.otus.social.dto.UserDataDto;
-import org.otus.social.dto.RegisterUserDto;
+
+import org.otus.social.main.dto.RegisterUserDto;
+import org.otus.social.main.dto.SearchRequestDto;
+import org.otus.social.main.dto.UserDataDto;
+
 import java.sql.SQLException;
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package org.otus.social.main.config;
+package org.otus.social.dialog.config;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;

@@ -1,4 +1,4 @@
-package otus.social.config;
+package org.otus.social.main.config;
 
 import io.tarantool.driver.api.TarantoolClient;
 import io.tarantool.driver.api.TarantoolClientFactory;

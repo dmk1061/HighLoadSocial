@@ -1,12 +1,12 @@
-package otus.social.controller;
+package org.otus.social.main.controller;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.otus.social.dto.AuthenticationRequest;
-import org.otus.social.dto.AuthenticationResponse;
-import org.otus.social.dto.RegisterUserDto;
-import org.otus.social.service.MyUserDetailService;
-import org.otus.social.util.JwtUtil;
+import org.otus.social.lib.util.JwtUtil;
+import org.otus.social.main.dto.AuthenticationRequest;
+import org.otus.social.main.dto.AuthenticationResponse;
+import org.otus.social.main.dto.RegisterUserDto;
+import org.otus.social.main.service.MyUserDetailService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;

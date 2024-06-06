@@ -4,7 +4,7 @@ spring:
   datasource:
     master:
       driver-class-name: org.postgresql.Driver
-      url: jdbc:postgresql://localhost:5432/postgres
+      url: jdbc:postgresql://localhost:5433/postgres
       username: postgres
       password: pass
   flyway:
@@ -14,11 +14,5 @@ spring:
       secret-key: secret-key
 secret-key: secret-key
 
-tarantool:
-  host: localhost
-  port: 3301
-  username: admin
-  password: admin
-
 server:
-  port: 8080
+  port: 8081

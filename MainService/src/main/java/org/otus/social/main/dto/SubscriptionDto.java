@@ -1,4 +1,4 @@
-package org.otus.social.dto;
+package org.otus.social.main.dto;
 
 import lombok.Data;
 

@@ -19,6 +19,3 @@ tarantool:
   port: 3301
   username: admin
   password: admin
-
-server:
-  port: 8080

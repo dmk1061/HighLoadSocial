@@ -1,6 +1,7 @@
-package org.otus.social.service;
+package org.otus.social.main.service;
 
-import org.otus.social.dto.SubscriptionDto;
+
+import org.otus.social.main.dto.SubscriptionDto;
 
 public interface SubscriptionService {
 

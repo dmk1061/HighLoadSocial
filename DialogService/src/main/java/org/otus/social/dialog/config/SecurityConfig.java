@@ -1,6 +1,7 @@
-package org.otus.social.main.config;
+package org.otus.social.dialog.config;
 
 import lombok.RequiredArgsConstructor;
+import org.otus.social.lib.filter.JwtRequestFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -9,12 +10,10 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.otus.social.lib.filter.JwtRequestFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -24,7 +23,6 @@ public class SecurityConfig {
 
     private final JwtRequestFilter jwtRequestFilter;
 
-    private final UserDetailsService jwtUserDetailsService;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -47,7 +45,7 @@ public class SecurityConfig {
     @Bean
     public AuthenticationManager authenticationManagerBean(final HttpSecurity http) throws Exception {
         final AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
-        authenticationManagerBuilder.userDetailsService(jwtUserDetailsService).passwordEncoder(passwordEncoder());
+        //     authenticationManagerBuilder.userDetailsService(jwtUserDetailsService).passwordEncoder(passwordEncoder());
         return authenticationManagerBuilder.build();
     }
 }

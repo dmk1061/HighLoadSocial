@@ -1,12 +1,12 @@
-package org.otus.social.service;
+package org.otus.social.main.service;
 
 import io.tarantool.driver.api.TarantoolClient;
 import io.tarantool.driver.mappers.factories.DefaultMessagePackMapperFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.otus.social.dto.SearchRequestDto;
-import org.otus.social.dto.UserDataDto;
-import org.otus.social.dto.RegisterUserDto;;
+import org.otus.social.main.dto.RegisterUserDto;
+import org.otus.social.main.dto.SearchRequestDto;
+import org.otus.social.main.dto.UserDataDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;

@@ -1,10 +1,10 @@
-package otus.social.controller;
+package org.otus.social.main.controller;
 
 import lombok.AllArgsConstructor;
-import org.otus.social.dto.PostDto;
-import org.otus.social.service.PostService;
-import org.otus.social.service.UserService;
-import org.otus.social.service.WarmUpService;
+import org.otus.social.main.dto.PostDto;
+import org.otus.social.main.service.PostService;
+import org.otus.social.main.service.UserService;
+import org.otus.social.main.service.WarmUpService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;

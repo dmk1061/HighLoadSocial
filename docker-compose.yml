@@ -1,13 +1,13 @@
 version: '3.8'
 
 services:
-  master:
-    container_name: "citus_master"
+  master_main:
+    container_name: "citus_master_main"
     image: "citusdata/citus:12.1.2"
     ports:
       - 5432:5432
     labels: ["com.citusdata.role=Master"]
-    environment: &AUTH
+    environment:
       POSTGRES_DB: postgres
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -15,29 +15,67 @@ services:
       PGPASSWORD: postgres
       POSTGRES_HOST_AUTH_METHOD: trust
     volumes:
-      - pgdata-yellow:/var/lib/postgresql/data
+      - pgdata-main:/var/lib/postgresql/data
 
-  citus_worker:
+  citus_worker_main:
     image: "citusdata/citus:12.1.2"
     labels: ["com.citusdata.role=Worker"]
-    depends_on: [citus_manager]
-#    environment: *AUTH
+    depends_on: [citus_manager_main]
     command: "/wait-for-manager.sh"
     environment:
       POSTGRES_HOST_AUTH_METHOD: trust
     volumes:
-      - pgdata-worker-yellow:/var/lib/postgresql/data
+      - pgdata-worker-main:/var/lib/postgresql/data
       - healthcheck-volume:/healthcheck
 
-  citus_manager:
-    container_name: "citus_manager"
+  citus_manager_main:
+    container_name: "citus_manager_main"
     image: "citusdata/membership-manager:0.3.0"
     volumes:
       - "${DOCKER_SOCK:-/var/run/docker.sock}:/var/run/docker.sock"
       - healthcheck-volume:/healthcheck
-    depends_on: [master]
-#    environment: *AUTH
+    depends_on: [master_main]
+##############################################################################################
+  master_dialog:
+    container_name: "citus_master_dialog"
+    image: "citusdata/citus:12.1.2"
+    ports:
+      - 5433:5432
+    labels: [ "com.citusdata.role=Master" ]
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      PGUSER: postgres
+      PGPASSWORD: postgres
+      POSTGRES_HOST_AUTH_METHOD: trust
+    volumes:
+      - pgdata-dialog:/var/lib/postgresql/data
 
+  citus_worker_dialog:
+      image: "citusdata/citus:12.1.2"
+      labels: [ "com.citusdata.role=Worker" ]
+      depends_on: [ citus_manager_dialog ]
+      command: "/wait-for-manager.sh"
+      environment:
+        POSTGRES_HOST_AUTH_METHOD: trust
+      volumes:
+        - pgdata-worker-dialog:/var/lib/postgresql/data
+        - healthcheck-volume:/healthcheck
+
+  citus_manager_dialog:
+      container_name: "citus_manager_dialog"
+      image: "citusdata/membership-manager:0.3.0"
+      volumes:
+        - "${DOCKER_SOCK:-/var/run/docker.sock}:/var/run/docker.sock"
+        - healthcheck-volume:/healthcheck
+      depends_on: [ master_dialog ]
+
+
+
+
+
+##############################################################################################
   rabbitmq:
     image: rabbitmq:3-management
     container_name: rabbitmq
@@ -72,10 +110,9 @@ networks:
     driver: bridge
 
 volumes:
-  pgdata-yellow:
-  pgdata-worker-yellow:
+  pgdata-main:
+  pgdata-worker-main:
+  pgdata-dialog:
+  pgdata-worker-dialog:
   healthcheck-volume:
-#  master1_data:
-#  slave1_data:
-#  slave2_data:
   rabbitmq_data:

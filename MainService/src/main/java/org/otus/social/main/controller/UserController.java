@@ -1,12 +1,12 @@
-package otus.social.controller;
+package org.otus.social.main.controller;
 
 import lombok.AllArgsConstructor;
-import org.otus.social.dto.SubscriptionDto;
-import org.otus.social.dto.SearchRequestDto;
-import org.otus.social.dto.UserDataDto;
-import org.otus.social.dto.RegisterUserDto;
-import org.otus.social.service.SubscriptionService;
-import org.otus.social.service.UserService;
+import org.otus.social.main.dto.RegisterUserDto;
+import org.otus.social.main.dto.SearchRequestDto;
+import org.otus.social.main.dto.SubscriptionDto;
+import org.otus.social.main.dto.UserDataDto;
+import org.otus.social.main.service.SubscriptionService;
+import org.otus.social.main.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import java.sql.SQLException;
 import java.util.List;
+
 
 @RestController
 @AllArgsConstructor

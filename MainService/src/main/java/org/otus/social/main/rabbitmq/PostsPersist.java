@@ -1,10 +1,10 @@
-package org.otus.social.rabbitmq;
+package org.otus.social.main.rabbitmq;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.otus.social.dto.PostDto;
+import org.otus.social.main.dto.PostDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;

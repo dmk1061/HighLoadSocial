@@ -3,9 +3,11 @@
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/CounterService/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/DialogService/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/MainService/MainServices/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/MainService/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/MainService/src/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/MainService/src/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/MainServices/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/module-lib/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />

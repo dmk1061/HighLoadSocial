@@ -1,7 +1,8 @@
-package otus.social.config;
+package org.otus.social.main.config;
 
-import org.otus.social.rabbitmq.PostsPersist;
-import org.otus.social.rabbitmq.PostsReceiver;
+
+import org.otus.social.main.rabbitmq.PostsPersist;
+import org.otus.social.main.rabbitmq.PostsReceiver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.amqp.core.Binding;

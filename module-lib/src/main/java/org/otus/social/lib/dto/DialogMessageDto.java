@@ -1,4 +1,4 @@
-package org.otus.social.dto;
+package org.otus.social.lib.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,9 +14,9 @@ public class DialogMessageDto implements Serializable {
 
     String body;
 
-    String fromUser;
+    Long fromUserId;
 
-    String toUser;
+    Long toUserId;
 
     LocalDateTime created;
 

@@ -1,9 +1,9 @@
-package org.otus.social.service;
+package org.otus.social.main.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import otus.social.config.RedisConfig;
-import org.otus.social.dto.SubscriptionDto;
+import org.otus.social.main.config.RedisConfig;
+import org.otus.social.main.dto.SubscriptionDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;

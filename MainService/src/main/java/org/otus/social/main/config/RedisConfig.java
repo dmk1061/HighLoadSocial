@@ -1,8 +1,8 @@
-package otus.social.config;
+package org.otus.social.main.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import org.otus.social.dto.PostDto;
+import org.otus.social.main.dto.PostDto;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;

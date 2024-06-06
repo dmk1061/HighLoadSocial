@@ -1,14 +1,13 @@
-package org.otus.social.service;
+package org.otus.social.main.service;
 
-
+import org.otus.social.main.rabbitmq.PostsReceiver;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import otus.social.config.RabbitConfig;
-import otus.social.config.RedisConfig;
-import org.otus.social.dto.PostDto;
-import org.otus.social.rabbitmq.PostsReceiver;
+import org.otus.social.main.config.RabbitConfig;
+import org.otus.social.main.config.RedisConfig;
+import org.otus.social.main.dto.PostDto;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;

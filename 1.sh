@@ -12,3 +12,4 @@ for volume in $volumes; do
     fi
 done
 
+#systemctl stop postgresql@14-main.service

@@ -1,4 +1,4 @@
-package org.otus.social.util;
+package org.otus.social.lib.util;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -7,7 +7,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -58,6 +57,11 @@ public class JwtUtil {
     public  Boolean validateToken(final String token, final UserDetails userDetails){
         final String username = extractUserName(token);
         return (username.equals(userDetails.getUsername())&& !isTokenExpired(token));
+    }
+
+    public  Boolean validateToken(final String token, final String user){
+        final String username = extractUserName(token);
+        return (username.equals(user)&& !isTokenExpired(token));
     }
 
     public  String extractJwtFromRequest(final HttpServletRequest request)  {

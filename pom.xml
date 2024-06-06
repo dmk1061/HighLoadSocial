@@ -6,12 +6,14 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.0.1</version>
+        <version>3.2.5</version>
     </parent>
+
     <groupId>org.otus.social</groupId>
     <artifactId>HighLoadSocial</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
+
     <modules>
         <module>DialogService</module>
         <module>MainService</module>
@@ -20,8 +22,8 @@
     </modules>
 
     <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.source>19</maven.compiler.source>
+        <maven.compiler.target>19</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -123,6 +125,12 @@
             <groupId>io.tarantool</groupId>
             <artifactId>cartridge-driver</artifactId>
             <version>0.13.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-site-plugin</artifactId>
+            <version>3.12.1</version>
+            <type>maven-plugin</type>
         </dependency>
     </dependencies>
 </project>

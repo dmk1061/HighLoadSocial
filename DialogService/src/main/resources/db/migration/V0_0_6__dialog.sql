@@ -3,10 +3,7 @@ CREATE TABLE DIALOG_MESSAGE  (
                        from_user_id bigint not null,
                        to_user_id bigint not null,
                        body text not null,
-                       created timestamp,
-                       CONSTRAINT fk_from_user
-                           FOREIGN KEY(from_user_id)
-                               REFERENCES USERS(id)
+                       created timestamp
 );
 INSERT INTO DIALOG_MESSAGE (from_user_id, to_user_id, body, created) VALUES
 (1, 2, 'Hey there! How are you?', NOW()),
@@ -82,6 +79,8 @@ INSERT INTO DIALOG_MESSAGE (from_user_id, to_user_id, body, created) VALUES
         (4, 13, 'Привет, как дела?', NOW() - INTERVAL '1 day' + INTERVAL '28 minutes'),
         (6, 14, 'Это интересно.', NOW() - INTERVAL '1 day' + INTERVAL '29 minutes'),
         (1, 15, 'Что ты думаешь об этом?', NOW() - INTERVAL '1 day' + INTERVAL '30 minutes');
+
+        SELECT create_distributed_table('DIALOG_MESSAGE', 'from_user_id','hash', 'default', 3);
 
 
 

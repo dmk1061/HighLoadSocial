@@ -1,4 +1,4 @@
-package otus.social.config;
+package org.otus.social.main.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;

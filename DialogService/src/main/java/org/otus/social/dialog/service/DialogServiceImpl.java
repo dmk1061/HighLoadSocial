@@ -1,8 +1,8 @@
-package org.otus.social.service;
+package org.otus.social.dialog.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.otus.social.dto.DialogMessageDto;
+import org.otus.social.lib.dto.DialogMessageDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -22,21 +22,19 @@ public class DialogServiceImpl implements DialogService {
     @Autowired
     @Qualifier("masterDataSource")
     private final DataSource masterDataSource;
-    private final MyUserDetailService userDetailService;
-    private final UserService userService;
+
 
 
     @Override
     public Boolean sent(final DialogMessageDto dialogMessageDto) {
-        final Long from = userDetailService.loadUserDataByUsername(dialogMessageDto.getFromUser()).getId();
-        final Long to = userDetailService.loadUserDataByUsername(dialogMessageDto.getToUser()).getId();
+
         try (final Connection con = masterDataSource.getConnection()) {
-            try (final PreparedStatement insertAdress = con.prepareStatement(
+            try (final PreparedStatement insertDialog = con.prepareStatement(
                     "INSERT INTO DIALOG_MESSAGE (from_user_id, to_user_id, body, created) VALUES (?,?,?, now())", Statement.RETURN_GENERATED_KEYS)) {
-                insertAdress.setLong(1, from);
-                insertAdress.setLong(2, to);
-                insertAdress.setString(3, dialogMessageDto.getBody());
-                insertAdress.executeUpdate();
+                insertDialog.setLong(1, dialogMessageDto.getFromUserId());
+                insertDialog.setLong(2, dialogMessageDto.getToUserId());
+                insertDialog.setString(3, dialogMessageDto.getBody());
+                insertDialog.executeUpdate();
             }
         } catch (Exception e) {
             log.error("Error during message persistence");
@@ -46,8 +44,7 @@ public class DialogServiceImpl implements DialogService {
     }
 
     @Override
-    public List<DialogMessageDto> getDialog(final String username, final Long to) {
-        final Long from = userDetailService.loadUserDataByUsername(username).getId();
+    public List<DialogMessageDto> getDialog(final Long from, final Long to) {
         final List<DialogMessageDto> dialog = new ArrayList<>();
         try (final Connection con = masterDataSource.getConnection()) {
             try (final PreparedStatement selectDialogs = con.prepareStatement(
@@ -63,8 +60,8 @@ public class DialogServiceImpl implements DialogService {
                 try (final ResultSet selectedMessages = selectDialogs.executeQuery()) {
                     while (selectedMessages.next()) {
                         DialogMessageDto dialogMessageDto = new DialogMessageDto();
-                        dialogMessageDto.setFromUser(selectedMessages.getString(1));
-                        dialogMessageDto.setToUser(selectedMessages.getString(2));
+                        dialogMessageDto.setFromUserId(selectedMessages.getLong(1));
+                        dialogMessageDto.setToUserId(selectedMessages.getLong(2));
                         dialogMessageDto.setBody(selectedMessages.getString(3));
                         dialog.add(dialogMessageDto);
                     }

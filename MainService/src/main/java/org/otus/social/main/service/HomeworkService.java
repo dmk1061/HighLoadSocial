@@ -1,12 +1,11 @@
-package org.otus.social.service;
+package org.otus.social.main.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.otus.social.main.SocialNetwork;
-import org.otus.social.dto.RegisterUserDto;
+import org.otus.social.main.MainService;
+import org.otus.social.main.dto.RegisterUserDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import javax.sql.DataSource;
@@ -32,7 +31,7 @@ public class HomeworkService {
     public void test() throws IOException {
         final List<List<String>> records = new ArrayList<>();
         final String fileName = "1.txt";
-        final ClassLoader classLoader = SocialNetwork.class.getClassLoader();
+        final ClassLoader classLoader = MainService.class.getClassLoader();
         final InputStream inputStream = classLoader.getResourceAsStream(fileName);
         final List<RegisterUserDto> newUsers = new ArrayList<>();
 

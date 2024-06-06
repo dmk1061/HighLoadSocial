@@ -1,4 +1,4 @@
-package org.otus.social.dto;
+package org.otus.social.main.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;

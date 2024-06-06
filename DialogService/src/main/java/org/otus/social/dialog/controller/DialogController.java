@@ -1,12 +1,13 @@
-package otus.social.controller;
+package org.otus.social.dialog.controller;
 
 import lombok.AllArgsConstructor;
-import org.otus.social.dto.DialogMessageDto;
-import org.otus.social.service.DialogService;
+
+import org.otus.social.dialog.service.DialogService;
+import org.otus.social.lib.dto.AuthenticationWrap;
+import org.otus.social.lib.dto.DialogMessageDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,18 +21,17 @@ public class DialogController {
 
     @PostMapping("/sent")
     public ResponseEntity<Boolean> publish(@RequestBody final DialogMessageDto dialogMessageDto)  {
-        dialogMessageDto.setFromUser(getCurrentUserName());
+        dialogMessageDto.setFromUserId(getCurrentUserId());
         dialogMessageDto.setCreated(LocalDateTime.now());
         return ResponseEntity.ok(dialogService.sent(dialogMessageDto));
     }
     @GetMapping("/get/{id}")
     public ResponseEntity<List<DialogMessageDto>> getDialog(@PathVariable("id") final Long id) {
-        return ResponseEntity.ok(dialogService.getDialog( getCurrentUserName(), id));
+        return ResponseEntity.ok(dialogService.getDialog(getCurrentUserId(), id));
     }
 
-    public String getCurrentUserName() {
-        final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        final Object principal = authentication.getPrincipal();
-        return (principal instanceof UserDetails) ? ((UserDetails) principal).getUsername() : principal.toString();
+    public Long getCurrentUserId() {
+        final AuthenticationWrap authentication = (AuthenticationWrap) SecurityContextHolder.getContext().getAuthentication();
+        return authentication.getUserId();
     }
 }
