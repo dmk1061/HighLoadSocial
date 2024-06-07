@@ -260,7 +260,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huX2RvZSIsInVzZXJfaWQiOiIxIiwiZXhwIjoxNzE3NDgwODY4LCJpYXQiOjE3MTc0NDQ4Njh9.fkqUig4my0PJJ4eX7d7R3KO-9np8RV7RpyM04i0swIo",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huX2RvZSIsInVzZXJfaWQiOiIxIiwiZXhwIjoxNzE3ODIxOTc2LCJpYXQiOjE3MTc3ODU5NzZ9.wVNCAlwmpJFcN7tO9KwZtBwaUjh_CjOUlW34Bz2Iwhk",
 							"type": "string"
 						}
 					]
@@ -279,18 +279,139 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\"toUser\": \"alice_smith\", \"body\": \"hashed_password_1\"}"
+					"raw": "{\"toUserId\": \"5\", \"body\": \"hashed_rrpkkkassword_1\"}"
 				},
 				"url": {
-					"raw": "http://localhost:8080/dialog/sent",
+					"raw": "http://localhost:8081/dialog/sent",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
-					"port": "8080",
+					"port": "8081",
 					"path": [
 						"dialog",
 						"sent"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "sentSeenMessage",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Parse the response JSON",
+							"var jsonResponse = JSON.parse(responseBody);",
+							"// Set a global variable with a value from the response",
+							"pm.environment.set('otus-token', pm.response.json().jwt);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huX2RvZSIsInVzZXJfaWQiOiIxIiwiZXhwIjoxNzE3ODIxOTc2LCJpYXQiOjE3MTc3ODU5NzZ9.wVNCAlwmpJFcN7tO9KwZtBwaUjh_CjOUlW34Bz2Iwhk",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{otus-token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"id\": 1, \"messageId\": 7}"
+				},
+				"url": {
+					"raw": "http://localhost:8082/counter/seen",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"counter",
+						"seen"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getSeenMessage",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Parse the response JSON",
+							"var jsonResponse = JSON.parse(responseBody);",
+							"// Set a global variable with a value from the response",
+							"pm.environment.set('otus-token', pm.response.json().jwt);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huX2RvZSIsInVzZXJfaWQiOiIxIiwiZXhwIjoxNzE3ODIxOTc2LCJpYXQiOjE3MTc3ODU5NzZ9.wVNCAlwmpJFcN7tO9KwZtBwaUjh_CjOUlW34Bz2Iwhk",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{otus-token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"id\": 1, \"messageId\": 4}"
+				},
+				"url": {
+					"raw": "http://localhost:8082/counter/get_seen",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"counter",
+						"get_seen"
 					]
 				}
 			},
