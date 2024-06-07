@@ -16,3 +16,9 @@ secret-key: secret-key
 
 server:
   port: 8081
+base:
+  url: arch.homework
+  dialog-host: localhost
+  counter-host: localhost
+  dialog-port: 8081
+  counter-port: 8082

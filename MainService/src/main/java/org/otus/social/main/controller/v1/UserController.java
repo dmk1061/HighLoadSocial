@@ -1,4 +1,4 @@
-package org.otus.social.main.controller;
+package org.otus.social.main.controller.v1;
 
 import lombok.AllArgsConstructor;
 import org.otus.social.main.dto.RegisterUserDto;

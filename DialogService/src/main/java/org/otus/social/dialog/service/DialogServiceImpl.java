@@ -98,4 +98,24 @@ public class DialogServiceImpl implements DialogService {
         }
         return true;
     }
+
+    @Override
+    public Boolean sentV2(DialogMessageDto dialogMessageDto) {
+        log.info("дополнительная логика второй версии");
+        return sent(dialogMessageDto);
+
+    }
+
+    @Override
+    public List<DialogMessageDto> getDialogV2(Long from, Long to) {
+        log.info("дополнительная логика второй версии");
+        return getDialog(from, to);
+
+    }
+
+    @Override
+    public Boolean updateSeenV2(List<Long> messages) {
+        log.info("дополнительная логика второй версии");
+        return  updateSeen(messages);
+    }
 }
