@@ -10,4 +10,6 @@ public interface DialogService {
     Boolean sent (DialogMessageDto dialogMessageDto) ;
 
     List<DialogMessageDto> getDialog(Long from, Long to);
+
+    Boolean updateSeen (List<Long> messages);
 }

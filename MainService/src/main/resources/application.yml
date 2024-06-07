@@ -22,3 +22,10 @@ tarantool:
 
 server:
   port: 8080
+
+base:
+  url: arch.homework
+  dialog-host: localhost
+  counter-host: localhost
+  dialog-port: 8081
+  counter-port: 8082

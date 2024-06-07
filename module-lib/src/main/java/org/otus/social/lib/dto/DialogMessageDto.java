@@ -18,6 +18,8 @@ public class DialogMessageDto implements Serializable {
 
     Long toUserId;
 
+    Boolean seen;
+
     LocalDateTime created;
 
 }

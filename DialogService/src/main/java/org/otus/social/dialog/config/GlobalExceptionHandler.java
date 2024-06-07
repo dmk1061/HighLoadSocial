@@ -1,4 +1,4 @@
-package org.otus.social.main.controller;
+package org.otus.social.dialog.config;
 
 
 import lombok.extern.slf4j.Slf4j;

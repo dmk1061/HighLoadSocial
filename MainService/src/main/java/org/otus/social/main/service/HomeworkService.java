@@ -2,10 +2,13 @@ package org.otus.social.main.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.otus.social.lib.feign.CounterClient;
+import org.otus.social.lib.feign.DialogClient;
 import org.otus.social.main.MainService;
 import org.otus.social.main.dto.RegisterUserDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import javax.sql.DataSource;
@@ -21,13 +24,35 @@ import java.util.List;
 @Slf4j
 public class HomeworkService {
 
-
-    private   final UserServiceImpl userService;
+    private final UserServiceImpl userService;
     @Autowired
     @Qualifier("masterDataSource")
     private final DataSource masterDataSource;
 
-   // @Scheduled(fixedRate = 100000000L)
+    private final DialogClient dialogClient;
+
+    private final CounterClient counterClient;
+
+    @Scheduled(fixedRate = 10000L)
+    public void sync() {
+        List<Long> dialogMessageIds = new ArrayList<>();
+        try {
+            dialogMessageIds = counterClient.getSeen();
+            dialogClient.updateSeen(dialogMessageIds);
+            for (Long id : dialogMessageIds){
+                log.info("сообщение прочитано "  +id);
+            }
+        } catch (Exception e) {
+            if (dialogMessageIds.size() > 0) {
+            counterClient.rollback(dialogMessageIds);
+            log.error("Ошибка апдейта счетчиков");
+            }
+        }
+
+
+    }
+
+
     public void test() throws IOException {
         final List<List<String>> records = new ArrayList<>();
         final String fileName = "1.txt";
@@ -65,7 +90,7 @@ public class HomeworkService {
 //            try (final Connection con = dataSource.getConnection()) {
 //                insertUserAndGetId(con, newUsers, 1L);
 //            }
- //           writeToSQLFile(newUsers);
+            //           writeToSQLFile(newUsers);
             registerUsers(newUsers);
         } catch (Exception e) {
             e.printStackTrace();
@@ -73,23 +98,24 @@ public class HomeworkService {
     }
 
 
-    public void writeToSQLFile(List<RegisterUserDto> userList) {
-        final HashMap<String, Integer > addressId = new HashMap<>();
+    public void writeToSQLFile(List<
+            RegisterUserDto> userList) {
+        final HashMap<String, Integer> addressId = new HashMap<>();
         int id = 16;
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("2.sql"))) {
             for (RegisterUserDto user : userList) {
                 final String addressInsert = String.format("INSERT INTO ADDRESS (id, city) VALUES (%d, '%s');\n", id, user.getCity());
-                final boolean writeAdress = addressId.get(user.getCity())== null;
-                if(writeAdress) {
+                final boolean writeAdress = addressId.get(user.getCity()) == null;
+                if (writeAdress) {
                     addressId.put(user.getCity(), id);
                 }
-                id = id+1;
+                id = id + 1;
 
                 final String userInsert = String.format("INSERT INTO USERS (id, name, surname, age, sex, address, username, password) VALUES (%d, '%s', '%s', %d, '%s', %d, '%s', '%s');\n",
-                        id,user.getName(), user.getSurname(), user.getAge(), user.getSex(), addressId.get(user.getCity()), user.getUsername(), user.getPassword());
-                id = id+1;
-                log.info(""+id);
-                if(writeAdress){
+                        id, user.getName(), user.getSurname(), user.getAge(), user.getSex(), addressId.get(user.getCity()), user.getUsername(), user.getPassword());
+                id = id + 1;
+                log.info("" + id);
+                if (writeAdress) {
                     writer.write(addressInsert);
                 }
 
@@ -99,6 +125,7 @@ public class HomeworkService {
             e.printStackTrace();
         }
     }
+
     @Transactional
     public Long registerUsers(final List<RegisterUserDto> list) throws SQLException {
 

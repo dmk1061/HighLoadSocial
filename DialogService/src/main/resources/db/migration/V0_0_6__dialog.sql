@@ -3,6 +3,7 @@ CREATE TABLE DIALOG_MESSAGE  (
                        from_user_id bigint not null,
                        to_user_id bigint not null,
                        body text not null,
+                       seen boolean,
                        created timestamp
 );
 INSERT INTO DIALOG_MESSAGE (from_user_id, to_user_id, body, created) VALUES

@@ -13,6 +13,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -24,13 +25,12 @@ public class DialogServiceImpl implements DialogService {
     private final DataSource masterDataSource;
 
 
-
     @Override
     public Boolean sent(final DialogMessageDto dialogMessageDto) {
 
         try (final Connection con = masterDataSource.getConnection()) {
             try (final PreparedStatement insertDialog = con.prepareStatement(
-                    "INSERT INTO DIALOG_MESSAGE (from_user_id, to_user_id, body, created) VALUES (?,?,?, now())", Statement.RETURN_GENERATED_KEYS)) {
+                    "INSERT INTO DIALOG_MESSAGE (from_user_id, to_user_id, body, seen, created) VALUES (?,?,?, false, now())", Statement.RETURN_GENERATED_KEYS)) {
                 insertDialog.setLong(1, dialogMessageDto.getFromUserId());
                 insertDialog.setLong(2, dialogMessageDto.getToUserId());
                 insertDialog.setString(3, dialogMessageDto.getBody());
@@ -38,6 +38,7 @@ public class DialogServiceImpl implements DialogService {
             }
         } catch (Exception e) {
             log.error("Error during message persistence");
+            return false;
         }
 
         return true;
@@ -49,7 +50,7 @@ public class DialogServiceImpl implements DialogService {
         try (final Connection con = masterDataSource.getConnection()) {
             try (final PreparedStatement selectDialogs = con.prepareStatement(
                     """
-                            select from_user_id, to_user_id, body from dialog_message dml
+                            select from_user_id, to_user_id, body, seen, from dialog_message dml
                             where (from_user_id = ? and to_user_id =?) or (from_user_id=? and to_user_id=?) order by created;
                             """)) {
                 selectDialogs.setLong(1, from);
@@ -63,6 +64,7 @@ public class DialogServiceImpl implements DialogService {
                         dialogMessageDto.setFromUserId(selectedMessages.getLong(1));
                         dialogMessageDto.setToUserId(selectedMessages.getLong(2));
                         dialogMessageDto.setBody(selectedMessages.getString(3));
+                        dialogMessageDto.setSeen(selectedMessages.getBoolean(4));
                         dialog.add(dialogMessageDto);
                     }
                 }
@@ -73,4 +75,27 @@ public class DialogServiceImpl implements DialogService {
         return dialog;
     }
 
+    @Override
+    public Boolean updateSeen(List<Long> messages) {
+
+        if (messages == null || messages.isEmpty()) {
+            return true;
+        }
+        String placeholders = messages.stream()
+                .map(id -> "?")
+                .collect(Collectors.joining(", "));
+        String sql = "UPDATE DIALOG_MESSAGE SET SEEN = TRUE WHERE ID IN (" + placeholders + ")";
+        try (final Connection con = masterDataSource.getConnection()) {
+            try (final PreparedStatement insertDialog = con.prepareStatement(sql)) {
+                for (int i = 0; i < messages.size(); i++) {
+                    insertDialog.setLong(i + 1, messages.get(i));
+                }
+                insertDialog.executeUpdate();
+            }
+        } catch (Exception e) {
+            log.error("Error during message persistence", e);
+            return false;
+        }
+        return true;
+    }
 }
