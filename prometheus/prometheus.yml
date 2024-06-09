@@ -1,0 +1,23 @@
+global:
+scrape_configs:
+  - job_name: 'MainService'
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 3s
+    static_configs:
+      - targets: ['localhost:8080']
+        labels:
+          application: 'MainService'
+  - job_name: 'DialogService'
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 3s
+    static_configs:
+      - targets: ['localhost:8081']
+        labels:
+          application: 'DialogService'
+  - job_name: 'CounterService'
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 3s
+    static_configs:
+      - targets: ['localhost:8082']
+        labels:
+          application: 'CounterService'

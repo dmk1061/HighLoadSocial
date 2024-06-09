@@ -1,6 +1,88 @@
 version: '3.8'
 
 services:
+#  zabbix-mysql:
+#    image: mysql:5.7
+#    container_name: zabbix-mysql
+#    environment:
+#      MYSQL_DATABASE: zabbix
+#      MYSQL_USER: zabbix
+#      MYSQL_PASSWORD: zabbix_password
+#      MYSQL_ROOT_PASSWORD: root_password
+#    volumes:
+#      - zabbix-mysql-data:/var/lib/mysql
+#    networks:
+#      - pg-network
+#
+#  zabbix-server:
+#    image: zabbix/zabbix-server-mysql:latest
+#    container_name: zabbix-server
+#    environment:
+#      DB_SERVER_HOST: zabbix-mysql
+#      MYSQL_DATABASE: zabbix
+#      MYSQL_USER: zabbix
+#      MYSQL_PASSWORD: zabbix_password
+#    volumes:
+#      - zabbix-server-data:/var/lib/zabbix
+#    depends_on:
+#      - zabbix-mysql
+#    ports:
+#      - "10051:10051"
+#    networks:
+#      - pg-network
+#
+#  zabbix-web:
+#    image: zabbix/zabbix-web-nginx-mysql:latest
+#    container_name: zabbix-web
+#    environment:
+#      DB_SERVER_HOST: zabbix-mysql
+#      MYSQL_DATABASE: zabbix
+#      MYSQL_USER: zabbix
+#      MYSQL_PASSWORD: zabbix_password
+#      ZBX_SERVER_HOST: zabbix-server
+#      PHP_TZ: Europe/Moscow
+#    ports:
+#      - "8080:8080"
+#      - "8443:8443"
+#    depends_on:
+#      - zabbix-server
+#    networks:
+#      - pg-network
+#
+#  zabbix-agent:
+#    image: zabbix/zabbix-agent:latest
+#    container_name: zabbix-agent
+#    environment:
+#      ZBX_SERVER_HOST: zabbix-server
+#    depends_on:
+#      - zabbix-server
+#    ports:
+#      - "10050:10050"
+#    networks:
+#      - pg-network
+
+
+
+  prometheus:
+      image: prom/prometheus
+  #    ports:
+  #      - "9090:9090"
+      volumes:
+        - ./prometheus:/etc/prometheus
+      network_mode: host
+      command:
+        - '--config.file=/etc/prometheus/prometheus.yml'
+
+  grafana:
+      image: grafana/grafana
+  #    ports:
+  #      - "3000:3000"
+      environment:
+        - GF_SECURITY_ADMIN_PASSWORD=grafanauser
+      network_mode: host
+      volumes:
+        - grafana:/var/lib/grafana
+
   master_main:
     container_name: "citus_master_main"
     image: "citusdata/citus:12.1.2"
@@ -16,6 +98,8 @@ services:
       POSTGRES_HOST_AUTH_METHOD: trust
     volumes:
       - pgdata-main:/var/lib/postgresql/data
+    networks:
+      - pg-network
 
   citus_worker_main:
     image: "citusdata/citus:12.1.2"
@@ -27,6 +111,8 @@ services:
     volumes:
       - pgdata-worker-main:/var/lib/postgresql/data
       - healthcheck-volume:/healthcheck
+    networks:
+      - pg-network
 
   citus_manager_main:
     container_name: "citus_manager_main"
@@ -35,7 +121,9 @@ services:
       - "${DOCKER_SOCK:-/var/run/docker.sock}:/var/run/docker.sock"
       - healthcheck-volume:/healthcheck
     depends_on: [master_main]
-##############################################################################################
+    networks:
+      - pg-network
+
   master_dialog:
     container_name: "citus_master_dialog"
     image: "citusdata/citus:12.1.2"
@@ -51,31 +139,32 @@ services:
       POSTGRES_HOST_AUTH_METHOD: trust
     volumes:
       - pgdata-dialog:/var/lib/postgresql/data
+    networks:
+      - pg-network
 
   citus_worker_dialog:
-      image: "citusdata/citus:12.1.2"
-      labels: [ "com.citusdata.role=Worker" ]
-      depends_on: [ citus_manager_dialog ]
-      command: "/wait-for-manager.sh"
-      environment:
-        POSTGRES_HOST_AUTH_METHOD: trust
-      volumes:
-        - pgdata-worker-dialog:/var/lib/postgresql/data
-        - healthcheck-volume:/healthcheck
+    image: "citusdata/citus:12.1.2"
+    labels: [ "com.citusdata.role=Worker" ]
+    depends_on: [ citus_manager_dialog ]
+    command: "/wait-for-manager.sh"
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust
+    volumes:
+      - pgdata-worker-dialog:/var/lib/postgresql/data
+      - healthcheck-volume:/healthcheck
+    networks:
+      - pg-network
 
   citus_manager_dialog:
-      container_name: "citus_manager_dialog"
-      image: "citusdata/membership-manager:0.3.0"
-      volumes:
-        - "${DOCKER_SOCK:-/var/run/docker.sock}:/var/run/docker.sock"
-        - healthcheck-volume:/healthcheck
-      depends_on: [ master_dialog ]
+    container_name: "citus_manager_dialog"
+    image: "citusdata/membership-manager:0.3.0"
+    volumes:
+      - "${DOCKER_SOCK:-/var/run/docker.sock}:/var/run/docker.sock"
+      - healthcheck-volume:/healthcheck
+    depends_on: [ master_dialog ]
+    networks:
+      - pg-network
 
-
-
-
-
-##############################################################################################
   rabbitmq:
     image: rabbitmq:3-management
     container_name: rabbitmq
@@ -84,6 +173,8 @@ services:
       - "15672:15672"
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - pg-network
 
   redis:
     image: redis
@@ -95,6 +186,8 @@ services:
     volumes:
       - ./redis.conf:/usr/local/etc/redis/redis.conf
     command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+    networks:
+      - pg-network
 
   tarantool:
     container_name: mytarantool
@@ -104,12 +197,17 @@ services:
       TARANTOOL_USER_PASSWORD: "admin"
     ports:
       - 3301:3301
+    networks:
+      - pg-network
 
 networks:
   pg-network:
     driver: bridge
 
 volumes:
+  grafana:
+  zabbix-mysql-data:
+  zabbix-server-data:
   pgdata-main:
   pgdata-worker-main:
   pgdata-dialog:

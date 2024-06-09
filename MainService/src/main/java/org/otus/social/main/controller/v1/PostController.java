@@ -5,6 +5,7 @@ import org.otus.social.main.dto.PostDto;
 import org.otus.social.main.service.PostService;
 import org.otus.social.main.service.UserService;
 import org.otus.social.main.service.WarmUpService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -54,6 +55,12 @@ public class PostController {
     public PostDto greeting(final PostDto message) throws Exception {
         Thread.sleep(1000); // simulated delay
         return new PostDto("Hello, " + HtmlUtils.htmlEscape(""+message.getUserId()) + "!", message.getUserId(), LocalDateTime.now());
+    }
+
+
+    @GetMapping("/health")
+    public ResponseEntity health() {
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
 

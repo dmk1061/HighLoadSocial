@@ -7,6 +7,7 @@ import org.otus.social.main.dto.SubscriptionDto;
 import org.otus.social.main.dto.UserDataDto;
 import org.otus.social.main.service.SubscriptionService;
 import org.otus.social.main.service.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -46,6 +47,11 @@ public class UserController {
     @GetMapping("/get/{id}")
     public ResponseEntity<UserDataDto> getUserDataById (@PathVariable("id") final Long id) {
         return ResponseEntity.ok(userService.getUserDataByUserId(id));
+    }
+
+    @GetMapping("/health")
+    public ResponseEntity health() {
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
      @GetMapping("/getInMemory/{id}")

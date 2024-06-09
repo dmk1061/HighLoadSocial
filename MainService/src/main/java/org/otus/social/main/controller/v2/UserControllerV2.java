@@ -20,7 +20,7 @@ import java.util.List;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/user/v2")
-public class UserController {
+public class UserControllerV2 {
 
     private  final UserService userService;
     private final SubscriptionService subscriptionService;

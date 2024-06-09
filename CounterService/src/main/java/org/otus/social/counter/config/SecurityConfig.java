@@ -29,6 +29,8 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .authorizeRequests()
+                .requestMatchers("/health").permitAll()
+                .requestMatchers("/actuator/*").permitAll()
                 .anyRequest().permitAll()
                 //.authenticated()
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);

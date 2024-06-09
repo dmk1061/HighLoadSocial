@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.otus.social.dialog.service.DialogService;
 import org.otus.social.lib.dto.AuthenticationWrap;
 import org.otus.social.lib.dto.DialogMessageDto;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -56,5 +57,11 @@ public class DialogController {
     public Long getCurrentUserId() {
         final AuthenticationWrap authentication = (AuthenticationWrap) SecurityContextHolder.getContext().getAuthentication();
         return authentication.getUserId();
+    }
+
+
+    @GetMapping("/health")
+    public ResponseEntity health() {
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

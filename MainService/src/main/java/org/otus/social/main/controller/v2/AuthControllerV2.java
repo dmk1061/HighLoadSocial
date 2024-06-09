@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/auth/v2")
 @AllArgsConstructor
-public class AuthController {
+public class AuthControllerV2 {
     private final AuthenticationManager authenticationManager;
     private final MyUserDetailService userDetailsService;
     private final JwtUtil jwtUtil;

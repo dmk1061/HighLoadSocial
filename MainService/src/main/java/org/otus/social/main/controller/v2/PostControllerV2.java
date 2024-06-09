@@ -20,26 +20,26 @@ import java.util.List;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/post/v2")
-public class PostController {
+public class PostControllerV2 {
 
     private final PostService postService;
     private  final UserService userService;
     private final WarmUpService warmUpService;
 
     @PostMapping("/publish")
-    public ResponseEntity<Boolean> publish(@RequestBody final PostDto postDto)  {
+    public ResponseEntity<Boolean> publishV2(@RequestBody final PostDto postDto)  {
         postDto.setUserId(getCurrentUserId());
         postDto.setCreated(LocalDateTime.now());
         return ResponseEntity.ok(postService.publish(postDto));
     }
 
     @GetMapping("/warm")
-    public ResponseEntity<Boolean> warmFeed() {
+    public ResponseEntity<Boolean> warmFeedV2() {
         return ResponseEntity.ok(warmUpService.feedWarmUp());
     }
 
     @GetMapping("/feed")
-    public ResponseEntity<List<PostDto>> getFriendsFeed() {
+    public ResponseEntity<List<PostDto>> getFriendsFeedV2() {
         return ResponseEntity.ok(postService.getFeed(getCurrentUserId()));
     }
 
@@ -50,9 +50,9 @@ public class PostController {
         final Long userId = userService.getByUserName(username).getId();
         return userId;
     }
-    @MessageMapping("/hello")
+    @MessageMapping("/hello/V2")
     @SendTo("/topic/greetings/john_doe")
-    public PostDto greeting(final PostDto message) throws Exception {
+    public PostDto greetingV2(final PostDto message) throws Exception {
         Thread.sleep(1000); // simulated delay
         return new PostDto("Hello, " + HtmlUtils.htmlEscape(""+message.getUserId()) + "!", message.getUserId(), LocalDateTime.now());
     }

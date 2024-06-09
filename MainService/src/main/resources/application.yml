@@ -29,3 +29,11 @@ base:
   counter-host: localhost
   dialog-port: 8081
   counter-port: 8082
+management:
+  endpoints:
+    web:
+      exposure:
+        include: [ "*" ]
+  endpoint:
+    prometheus:
+      enabled: true
