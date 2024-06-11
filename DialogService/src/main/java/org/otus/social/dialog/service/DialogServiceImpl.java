@@ -47,17 +47,19 @@ public class DialogServiceImpl implements DialogService {
     @Override
     public List<DialogMessageDto> getDialog(final Long from, final Long to) {
         final List<DialogMessageDto> dialog = new ArrayList<>();
+        log.info("getConnection");
         try (final Connection con = masterDataSource.getConnection()) {
+            log.info("connection ok");
             try (final PreparedStatement selectDialogs = con.prepareStatement(
                     """
-                            select from_user_id, to_user_id, body, seen, from dialog_message dml
+                            select from_user_id, to_user_id, body, seen from dialog_message dml
                             where (from_user_id = ? and to_user_id =?) or (from_user_id=? and to_user_id=?) order by created;
                             """)) {
                 selectDialogs.setLong(1, from);
                 selectDialogs.setLong(2,  to);
                 selectDialogs.setLong(3, from);
                 selectDialogs.setLong(4, to);
-
+                log.info("executing query");
                 try (final ResultSet selectedMessages = selectDialogs.executeQuery()) {
                     while (selectedMessages.next()) {
                         DialogMessageDto dialogMessageDto = new DialogMessageDto();
@@ -70,7 +72,7 @@ public class DialogServiceImpl implements DialogService {
                 }
             }
         } catch (Exception e) {
-            log.error("Error during message persistence");
+            log.error("Error during dialog retrievement"  +e);
         }
         return dialog;
     }

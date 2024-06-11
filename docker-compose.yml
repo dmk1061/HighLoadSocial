@@ -22,7 +22,8 @@ services:
     depends_on:
       - nginx
       - citus_master_dialog
-      - citus_worker_dialog
+      - citus_worker_dialog_1
+      - citus_worker_dialog_2
       - citus_manager_dialog
       - prometheus
     restart: unless-stopped
@@ -40,7 +41,8 @@ services:
     depends_on:
       - nginx
       - citus_master_dialog
-      - citus_worker_dialog
+      - citus_worker_dialog_1
+      - citus_worker_dialog_2
       - citus_manager_dialog
       - prometheus
     restart: unless-stopped
@@ -49,13 +51,27 @@ services:
     networks:
       - pg-network
 
+  haproxy-pg:
+    image: haproxy:3.0-dev
+    container_name: haproxy-pg
+    depends_on:
+      - citus_worker_dialog_1
+      - citus_worker_dialog_2
+    volumes:
+      - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
+    ports:
+      - "5000:5432"
+    networks:
+      - pg-network
+    restart: always
 
   citus_master_dialog:
-    container_name: "citus_master_dialog"
-    image: "citusdata/citus:12.1.2"
+    container_name: citus_master_dialog
+    image: citusdata/citus:12.1.2
     ports:
       - 5432:5432
-    labels: [ "com.citusdata.role=Master" ]
+    labels:
+      - com.citusdata.role=Master
     environment:
       POSTGRES_DB: postgres
       POSTGRES_USER: postgres
@@ -68,10 +84,29 @@ services:
     networks:
       - pg-network
 
-  citus_worker_dialog:
-    image: "citusdata/citus:12.1.2"
-    labels: [ "com.citusdata.role=Worker" ]
-    depends_on: [ citus_manager_dialog ]
+  citus_worker_dialog_1:
+    container_name: citus_worker_dialog_1
+    image: citusdata/citus:12.1.2
+    labels:
+      - com.citusdata.role=Worker
+    depends_on:
+      - citus_manager_dialog
+    command: "/wait-for-manager.sh"
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust
+    volumes:
+      - pgdata-worker-dialog:/var/lib/postgresql/data
+      - healthcheck-volume:/healthcheck
+    networks:
+      - pg-network
+
+  citus_worker_dialog_2:
+    container_name: citus_worker_dialog_2
+    image: citusdata/citus:12.1.2
+    labels:
+      - com.citusdata.role=Worker
+    depends_on:
+      - citus_manager_dialog
     command: "/wait-for-manager.sh"
     environment:
       POSTGRES_HOST_AUTH_METHOD: trust
@@ -82,12 +117,13 @@ services:
       - pg-network
 
   citus_manager_dialog:
-    container_name: "citus_manager_dialog"
-    image: "citusdata/membership-manager:0.3.0"
+    container_name: citus_manager_dialog
+    image: citusdata/membership-manager:0.3.0
     volumes:
       - "${DOCKER_SOCK:-/var/run/docker.sock}:/var/run/docker.sock"
       - healthcheck-volume:/healthcheck
-    depends_on: [ citus_master_dialog ]
+    depends_on:
+      - citus_master_dialog
     networks:
       - pg-network
 #  postgres:
@@ -142,17 +178,7 @@ services:
 #    depends_on: [citus_master_main]
 #    networks:
 #      - pg-network
-#  haproxy-pg:
-#    image: haproxy:3.0-dev
-#    container_name: haproxy-pg
-#    depends_on:
-#      - master
-#      - pg-test-slave
-#    volumes:
-#      - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
-#    ports:
-#      - "5000:5432"
-#    restart: always
+
 #  zabbix-mysql:
 #    image: mysql:5.7
 #    container_name: zabbix-mysql
