@@ -1,6 +1,158 @@
 version: '3.8'
 
 services:
+  nginx:
+    image: nginx:1.21
+    container_name: nginx
+    restart: on-failure
+    volumes:
+      - './nginx/default.conf:/etc/nginx/conf.d/default.conf'
+    ports:
+      - '80:80'
+      - '8080:8080'
+    networks:
+      - pg-network
+
+  dialog-service-1:
+    container_name: dialog-service-1
+    build:
+      context: ./DialogService
+    environment:
+      - CONTAINER_NAME=dialog-service-1
+    depends_on:
+      - nginx
+      - citus_master_dialog
+      - citus_worker_dialog
+      - citus_manager_dialog
+      - prometheus
+    restart: unless-stopped
+    ports:
+      - 8085:8081
+    networks:
+      - pg-network
+
+  dialog-service-2:
+    container_name: dialog-service-2
+    build:
+      context: ./DialogService
+    environment:
+      - CONTAINER_NAME=dialog-service-2
+    depends_on:
+      - nginx
+      - citus_master_dialog
+      - citus_worker_dialog
+      - citus_manager_dialog
+      - prometheus
+    restart: unless-stopped
+    ports:
+      - 8086:8081
+    networks:
+      - pg-network
+
+
+  citus_master_dialog:
+    container_name: "citus_master_dialog"
+    image: "citusdata/citus:12.1.2"
+    ports:
+      - 5432:5432
+    labels: [ "com.citusdata.role=Master" ]
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      PGUSER: postgres
+      PGPASSWORD: postgres
+      POSTGRES_HOST_AUTH_METHOD: trust
+    volumes:
+      - pgdata-dialog:/var/lib/postgresql/data
+    networks:
+      - pg-network
+
+  citus_worker_dialog:
+    image: "citusdata/citus:12.1.2"
+    labels: [ "com.citusdata.role=Worker" ]
+    depends_on: [ citus_manager_dialog ]
+    command: "/wait-for-manager.sh"
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust
+    volumes:
+      - pgdata-worker-dialog:/var/lib/postgresql/data
+      - healthcheck-volume:/healthcheck
+    networks:
+      - pg-network
+
+  citus_manager_dialog:
+    container_name: "citus_manager_dialog"
+    image: "citusdata/membership-manager:0.3.0"
+    volumes:
+      - "${DOCKER_SOCK:-/var/run/docker.sock}:/var/run/docker.sock"
+      - healthcheck-volume:/healthcheck
+    depends_on: [ citus_master_dialog ]
+    networks:
+      - pg-network
+#  postgres:
+#    image: "postgres:13-alpine"
+#    container_name: "postgres"
+#    environment:
+#      - "POSTGRES_USER=postgres"
+#      - "POSTGRES_PASSWORD=postgres"
+#    #    volumes:
+#    #      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+#    ports:
+#      - "5432:5432"
+#    networks:
+#      - pg-network
+#  citus_master_main:
+#    container_name: "citus_master_main"
+#    image: "citusdata/citus:12.1.2"
+#    ports:
+#      - 5432:5432
+#    labels: ["com.citusdata.role=Master"]
+#    environment:
+#      POSTGRES_DB: postgres
+#      POSTGRES_USER: postgres
+#      POSTGRES_PASSWORD: postgres
+#      PGUSER: postgres
+#      PGPASSWORD: postgres
+#      POSTGRES_HOST_AUTH_METHOD: trust
+#    volumes:
+#      - pgdata-main:/var/lib/postgresql/data
+#    networks:
+#      - pg-network
+#
+#  citus_worker_main:
+#    image: "citusdata/citus:12.1.2"
+#    labels: ["com.citusdata.role=Worker"]
+#    depends_on: [citus_manager_main]
+#    command: "/wait-for-manager.sh"
+#    environment:
+#      POSTGRES_HOST_AUTH_METHOD: trust
+#    volumes:
+#      - pgdata-worker-main:/var/lib/postgresql/data
+#      - healthcheck-volume:/healthcheck
+#    networks:
+#      - pg-network
+#
+#  citus_manager_main:
+#    container_name: "citus_manager_main"
+#    image: "citusdata/membership-manager:0.3.0"
+#    volumes:
+#      - "${DOCKER_SOCK:-/var/run/docker.sock}:/var/run/docker.sock"
+#      - healthcheck-volume:/healthcheck
+#    depends_on: [citus_master_main]
+#    networks:
+#      - pg-network
+#  haproxy-pg:
+#    image: haproxy:3.0-dev
+#    container_name: haproxy-pg
+#    depends_on:
+#      - master
+#      - pg-test-slave
+#    volumes:
+#      - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
+#    ports:
+#      - "5000:5432"
+#    restart: always
 #  zabbix-mysql:
 #    image: mysql:5.7
 #    container_name: zabbix-mysql
@@ -72,133 +224,55 @@ services:
       network_mode: host
       command:
         - '--config.file=/etc/prometheus/prometheus.yml'
+#
+#  grafana:
+#      image: grafana/grafana
+#  #    ports:
+#  #      - "3000:3000"
+#      environment:
+#        - GF_SECURITY_ADMIN_PASSWORD=grafanauser
+#      network_mode: host
+#      volumes:
+#        - grafana:/var/lib/grafana
 
-  grafana:
-      image: grafana/grafana
-  #    ports:
-  #      - "3000:3000"
-      environment:
-        - GF_SECURITY_ADMIN_PASSWORD=grafanauser
-      network_mode: host
-      volumes:
-        - grafana:/var/lib/grafana
 
-  master_main:
-    container_name: "citus_master_main"
-    image: "citusdata/citus:12.1.2"
-    ports:
-      - 5432:5432
-    labels: ["com.citusdata.role=Master"]
-    environment:
-      POSTGRES_DB: postgres
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      PGUSER: postgres
-      PGPASSWORD: postgres
-      POSTGRES_HOST_AUTH_METHOD: trust
-    volumes:
-      - pgdata-main:/var/lib/postgresql/data
-    networks:
-      - pg-network
 
-  citus_worker_main:
-    image: "citusdata/citus:12.1.2"
-    labels: ["com.citusdata.role=Worker"]
-    depends_on: [citus_manager_main]
-    command: "/wait-for-manager.sh"
-    environment:
-      POSTGRES_HOST_AUTH_METHOD: trust
-    volumes:
-      - pgdata-worker-main:/var/lib/postgresql/data
-      - healthcheck-volume:/healthcheck
-    networks:
-      - pg-network
 
-  citus_manager_main:
-    container_name: "citus_manager_main"
-    image: "citusdata/membership-manager:0.3.0"
-    volumes:
-      - "${DOCKER_SOCK:-/var/run/docker.sock}:/var/run/docker.sock"
-      - healthcheck-volume:/healthcheck
-    depends_on: [master_main]
-    networks:
-      - pg-network
 
-  master_dialog:
-    container_name: "citus_master_dialog"
-    image: "citusdata/citus:12.1.2"
-    ports:
-      - 5433:5432
-    labels: [ "com.citusdata.role=Master" ]
-    environment:
-      POSTGRES_DB: postgres
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      PGUSER: postgres
-      PGPASSWORD: postgres
-      POSTGRES_HOST_AUTH_METHOD: trust
-    volumes:
-      - pgdata-dialog:/var/lib/postgresql/data
-    networks:
-      - pg-network
-
-  citus_worker_dialog:
-    image: "citusdata/citus:12.1.2"
-    labels: [ "com.citusdata.role=Worker" ]
-    depends_on: [ citus_manager_dialog ]
-    command: "/wait-for-manager.sh"
-    environment:
-      POSTGRES_HOST_AUTH_METHOD: trust
-    volumes:
-      - pgdata-worker-dialog:/var/lib/postgresql/data
-      - healthcheck-volume:/healthcheck
-    networks:
-      - pg-network
-
-  citus_manager_dialog:
-    container_name: "citus_manager_dialog"
-    image: "citusdata/membership-manager:0.3.0"
-    volumes:
-      - "${DOCKER_SOCK:-/var/run/docker.sock}:/var/run/docker.sock"
-      - healthcheck-volume:/healthcheck
-    depends_on: [ master_dialog ]
-    networks:
-      - pg-network
-
-  rabbitmq:
-    image: rabbitmq:3-management
-    container_name: rabbitmq
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    volumes:
-      - rabbitmq_data:/var/lib/rabbitmq
-    networks:
-      - pg-network
-
-  redis:
-    image: redis
-    restart: always
-    environment:
-      REDIS_PASSWORD: redis
-    ports:
-      - 6379:6379
-    volumes:
-      - ./redis.conf:/usr/local/etc/redis/redis.conf
-    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
-    networks:
-      - pg-network
-
-  tarantool:
-    container_name: mytarantool
-    image: tarantool/tarantool:latest
-    environment:
-      TARANTOOL_USER_NAME: "admin"
-      TARANTOOL_USER_PASSWORD: "admin"
-    ports:
-      - 3301:3301
-    networks:
-      - pg-network
+#  rabbitmq:
+#    image: rabbitmq:3-management
+#    container_name: rabbitmq
+#    ports:
+#      - "5672:5672"
+#      - "15672:15672"
+#    volumes:
+#      - rabbitmq_data:/var/lib/rabbitmq
+#    networks:
+#      - pg-network
+#
+#  redis:
+#    image: redis
+#    restart: always
+#    environment:
+#      REDIS_PASSWORD: redis
+#    ports:
+#      - 6379:6379
+#    volumes:
+#      - ./redis.conf:/usr/local/etc/redis/redis.conf
+#    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+#    networks:
+#      - pg-network
+#
+#  tarantool:
+#    container_name: mytarantool
+#    image: tarantool/tarantool:latest
+#    environment:
+#      TARANTOOL_USER_NAME: "admin"
+#      TARANTOOL_USER_PASSWORD: "admin"
+#    ports:
+#      - 3301:3301
+#    networks:
+#      - pg-network
 
 networks:
   pg-network:

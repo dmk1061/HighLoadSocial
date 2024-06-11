@@ -4,18 +4,19 @@ spring:
   datasource:
     master:
       driver-class-name: org.postgresql.Driver
-      url: jdbc:postgresql://localhost:5432/postgres
+      url: jdbc:postgresql://citus_master_main:5432/postgres
       username: postgres
-      password: pass
+      password: postgres
   flyway:
     baseline-on-migrate: true
     enabled: true
     placeholders:
       secret-key: secret-key
+
 secret-key: secret-key
 
 tarantool:
-  host: localhost
+  host: tarantool
   port: 3301
   username: admin
   password: admin
@@ -26,9 +27,10 @@ server:
 base:
   url: arch.homework
   dialog-host: localhost
-  counter-host: localhost
   dialog-port: 8081
+  counter-host: localhost
   counter-port: 8082
+
 management:
   endpoints:
     web:

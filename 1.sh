@@ -13,3 +13,4 @@ for volume in $volumes; do
 done
 
 #systemctl stop postgresql@14-main.service
+#systemctl stop redis-server.service

@@ -1,4 +1,4 @@
-package org.otus.social.main.config;
+package org.otus.social.dialog;
 
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
