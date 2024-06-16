@@ -24,6 +24,11 @@ public class DialogServiceImpl implements DialogService {
     @Qualifier("masterDataSource")
     private final DataSource masterDataSource;
 
+    @Autowired
+    @Qualifier("slaveDataSource")
+    private final DataSource slaveDataSource;
+
+
 
     @Override
     public Boolean sent(final DialogMessageDto dialogMessageDto) {
@@ -48,7 +53,7 @@ public class DialogServiceImpl implements DialogService {
     public List<DialogMessageDto> getDialog(final Long from, final Long to) {
         final List<DialogMessageDto> dialog = new ArrayList<>();
         log.info("getConnection");
-        try (final Connection con = masterDataSource.getConnection()) {
+        try (final Connection con = slaveDataSource.getConnection()) {
             log.info("connection ok");
             try (final PreparedStatement selectDialogs = con.prepareStatement(
                     """
@@ -62,6 +67,7 @@ public class DialogServiceImpl implements DialogService {
                 log.info("executing query");
                 try (final ResultSet selectedMessages = selectDialogs.executeQuery()) {
                     while (selectedMessages.next()) {
+                        log.info("next message");
                         DialogMessageDto dialogMessageDto = new DialogMessageDto();
                         dialogMessageDto.setFromUserId(selectedMessages.getLong(1));
                         dialogMessageDto.setToUserId(selectedMessages.getLong(2));
