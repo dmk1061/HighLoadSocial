@@ -81,7 +81,7 @@ INSERT INTO DIALOG_MESSAGE (from_user_id, to_user_id, body, created) VALUES
         (6, 14, 'Это интересно.', NOW() - INTERVAL '1 day' + INTERVAL '29 minutes'),
         (1, 15, 'Что ты думаешь об этом?', NOW() - INTERVAL '1 day' + INTERVAL '30 minutes');
 
-        SELECT create_distributed_table('DIALOG_MESSAGE', 'from_user_id','hash', 'default', 3);
+--        SELECT create_distributed_table('DIALOG_MESSAGE', 'from_user_id','hash', 'default', 3);
 
 
 

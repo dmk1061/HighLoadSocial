@@ -4,14 +4,24 @@ spring:
   datasource:
     master:
       driver-class-name: org.postgresql.Driver
-      url: jdbc:postgresql://citus_master_dialog:5432/postgres
+      url: jdbc:postgresql://master1:5432/postgres
       username: postgres
-      password: postgress
-  flyway:
-    baseline-on-migrate: true
-    enabled: true
-    placeholders:
-      secret-key: secret-key
+      password: postgres
+    slave:
+      driver-class-name: org.postgresql.Driver
+      url: jdbc:postgresql://haproxy-pg:5432/postgres
+      username: postgres
+      password: postgres
+flyway:
+  datasources:               # Define Flyway configurations for each datasource
+    master:                  # Targeting the 'master' datasource
+      enabled: true          # Enable Flyway for the master datasource
+      locations: classpath:db/migration  # Specify Flyway migration scripts location for master
+      baseline-on-migrate: true  # Baseline on migrate for master datasource if needed
+      placeholders:
+        secret-key: ${secret-key}  # Define placeholders for master datasource migrations
+    slave:                   # No Flyway configuration needed for 'slave' datasource
+      enabled: false
 secret-key: secret-key
 
 server:
